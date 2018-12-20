@@ -304,7 +304,8 @@ class KeystoneProvider extends React.Component {
           //   _isOptimistic flag.
           // Egg: We need to know the types to set the flag on, but that comes
           //   via a GraphQL query from Apollo).
-          keystoneListsMeta = data._ksListsMeta || emptyObject;
+
+          keystoneListsMeta = data == null ? emptyObject : data;
           return (
             <SchemaContext.Provider value={keystoneListsMeta}>
               {this.props.children}

@@ -43,6 +43,7 @@
     "apollo-errors": "^1.9.0",
     "apollo-link": "^1.2.4",
     "apollo-link-error": "^1.1.2",
+    "apollo-link-http": "^1.5.9",
     "apollo-link-state": "^0.4.2",
     "apollo-server-express": "^2.3.1",
     "apollo-upload-client": "^9.0.0",
@@ -135,6 +136,7 @@
     "react-router-dom": "^4.2.2",
     "react-scrolllock": "^3.0.1",
     "react-select": "^2.1.2",
+    "react-test-renderer": "^16.6.3",
     "react-toast-notifications": "^1.2.0",
     "react-transition-group": "^2.3.1",
     "react-window": "^1.2.4",
@@ -179,6 +181,8 @@
     "mongodb-memory-server": "^2.7.4",
     "pino-colada": "^1.4.4",
     "start-server-and-test": "^1.7.11",
-    "supertest-light": "^1.0.2"
+    "supertest-fetch": "^1.2.2",
+    "supertest-light": "^1.0.2",
+    "wait-for-expect": "^1.1.0"
   }
 }
