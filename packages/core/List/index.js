@@ -92,7 +92,7 @@ const mapNativeTypeToKeystonType = (type, listKey, fieldPath) => {
 };
 
 module.exports = class List {
-  constructor(key, config, { getListByKey, adapter, defaultAccess, getAuth }) {
+  constructor(key, config, { getListByKey, getGraphQLQuery, adapter, defaultAccess, getAuth }) {
     this.key = key;
 
     // 180814 JM TODO: Since there's no access control specified, this implicitly makes name, id or {labelField} readable by all (probably bad?)
@@ -192,6 +192,40 @@ module.exports = class List {
     this.views = mapKeys(sanitisedFieldsConfig, fieldConfig => ({
       ...fieldConfig.type.views,
     }));
+
+    this.hooksActions = {
+      /**
+       * @param queryString String A graphQL query string
+       * @param options.skipAccessControl Boolean By default access control _of
+       * the user making the initial request_ is still tested. Disable all
+       * Access Control checks with this flag
+       * @param options.variables Object The variables passed to the graphql
+       * query for the given queryString.
+       *
+       * @return Promise<Object> The graphql query response
+       */
+      query: context => (queryString, { skipAccessControl = false, variables } = {}) => {
+        let passThroughContext = context;
+
+        if (skipAccessControl) {
+          passThroughContext = {
+            ...context,
+            getListAccessControlForUser: () => true,
+            getFieldAccessControlForUser: () => true,
+          };
+        }
+
+        const graphQLQuery = getGraphQLQuery();
+
+        if (!graphQLQuery) {
+          return Promise.reject(
+            new Error('No executable schema is available. Have you setup `@voussoir/server`?')
+          );
+        }
+
+        return graphQLQuery(queryString, passThroughContext, variables);
+      },
+    };
   }
 
   getAdminMeta() {
@@ -218,12 +252,19 @@ module.exports = class List {
       },
     };
   }
-  get gqlTypes() {
+
+  getGqlTypes({ skipAccessControl = false } = {}) {
     // https://github.com/opencrud/opencrud/blob/master/spec/2-relational/2-2-queries/2-2-3-filters.md#boolean-expressions
     const types = [];
-    if (this.access.read || this.access.create || this.access.update || this.access.delete) {
+    if (
+      skipAccessControl ||
+      this.access.read ||
+      this.access.create ||
+      this.access.update ||
+      this.access.delete
+    ) {
       types.push(
-        ...flatten(this.fields.map(field => field.gqlAuxTypes)),
+        ...flatten(this.fields.map(field => field.getGqlAuxTypes({ skipAccessControl }))),
         `
         type ${this.gqlNames.outputTypeName} {
           id: ID
@@ -237,7 +278,7 @@ module.exports = class List {
           _label_: String
           ${flatten(
             this.fields
-              .filter(field => field.access.read) // If it's globally set to false, makes sense to never show it
+              .filter(field => skipAccessControl || field.access.read) // If it's globally set to false, makes sense to never show it
               .map(field => field.gqlOutputFields)
           ).join('\n')}
         }
@@ -254,7 +295,7 @@ module.exports = class List {
 
           ${flatten(
             this.fields
-              .filter(field => field.access.read) // If it's globally set to false, makes sense to never show it
+              .filter(field => skipAccessControl || field.access.read) // If it's globally set to false, makes sense to never show it
               .map(field => field.gqlQueryInputFields)
           ).join('\n')}
         }`,
@@ -266,12 +307,12 @@ module.exports = class List {
       );
     }
 
-    if (this.access.update) {
+    if (skipAccessControl || this.access.update) {
       types.push(`
         input ${this.gqlNames.updateInputName} {
           ${flatten(
             this.fields
-              .filter(field => field.access.update) // If it's globally set to false, makes sense to never let it be updated
+              .filter(field => skipAccessControl || field.access.update) // If it's globally set to false, makes sense to never let it be updated
               .map(field => field.gqlUpdateInputFields)
           ).join('\n')}
         }
@@ -284,12 +325,12 @@ module.exports = class List {
       `);
     }
 
-    if (this.access.create) {
+    if (skipAccessControl || this.access.create) {
       types.push(`
         input ${this.gqlNames.createInputName} {
           ${flatten(
             this.fields
-              .filter(field => field.access.create) // If it's globally set to false, makes sense to never let it be created
+              .filter(field => skipAccessControl || field.access.create) // If it's globally set to false, makes sense to never let it be created
               .map(field => field.gqlCreateInputFields)
           ).join('\n')}
         }
@@ -314,13 +355,15 @@ module.exports = class List {
     ];
   }
 
-  get gqlQueries() {
+  getGqlQueries({ skipAccessControl = false } = {}) {
     // All the auxiliary queries the fields want to add
-    const queries = flatten(this.fields.map(field => field.gqlAuxQueries));
+    const queries = flatten(
+      this.fields.map(field => field.getGqlAuxQueries({ skipAccessControl }))
+    );
 
     // If `read` is either `true`, or a function (we don't care what the result
     // of the function is, that'll get executed at a later time)
-    if (this.access.read) {
+    if (skipAccessControl || this.access.read) {
       queries.push(
         `
         ${this.gqlNames.listQueryName}(
@@ -420,12 +463,14 @@ module.exports = class List {
     return objMerge(this.fields.map(field => field.gqlAuxMutationResolvers));
   }
 
-  get gqlMutations() {
-    const mutations = flatten(this.fields.map(field => field.gqlAuxMutations));
+  getGqlMutations({ skipAccessControl = false } = {}) {
+    const mutations = flatten(
+      this.fields.map(field => field.getGqlAuxMutations({ skipAccessControl }))
+    );
 
     // NOTE: We only check for truthy as it could be `true`, or a function (the
     // function is executed later in the resolver)
-    if (this.access.create) {
+    if (skipAccessControl || this.access.create) {
       mutations.push(`
         ${this.gqlNames.createMutationName}(
           data: ${this.gqlNames.createInputName}
@@ -439,7 +484,7 @@ module.exports = class List {
       `);
     }
 
-    if (this.access.update) {
+    if (skipAccessControl || this.access.update) {
       mutations.push(`
         ${this.gqlNames.updateMutationName}(
           id: ID!
@@ -454,7 +499,7 @@ module.exports = class List {
       `);
     }
 
-    if (this.access.delete) {
+    if (skipAccessControl || this.access.delete) {
       mutations.push(`
         ${this.gqlNames.deleteMutationName}(
           id: ID!
@@ -639,8 +684,8 @@ module.exports = class List {
 
         [this.gqlNames.listMetaName]: (_, args, context) => this.listMeta(context),
 
-        [this.gqlNames.itemQueryName]: (_, { where: { id } }, context) =>
-          this.itemQuery(id, context, this.gqlNames.itemQueryName),
+        [this.gqlNames.itemQueryName]: (_, args, context) =>
+          this.itemQuery(args, context, this.gqlNames.itemQueryName),
       };
     }
 
@@ -712,7 +757,12 @@ module.exports = class List {
     };
   }
 
-  async itemQuery(id, context, gqlName) {
+  async itemQuery(
+    // prettier-ignore
+    { where: { id } },
+    context,
+    gqlName
+  ) {
     const operation = 'read';
     graphqlLogger.debug({ id, operation, type: opToType[operation], gqlName }, 'Start query');
 
@@ -729,7 +779,11 @@ module.exports = class List {
       return null;
     }
 
-    return this.itemQuery(context.authedItem.id, context, this.gqlNames.authenticatedQueryName);
+    return this.itemQuery(
+      { where: { id: context.authedItem.id } },
+      context,
+      this.gqlNames.authenticatedQueryName
+    );
   }
 
   get gqlMutationResolvers() {
@@ -777,8 +831,15 @@ module.exports = class List {
     });
   }
 
-  async _mapToFields(fields, action) {
-    return await resolveAllKeys(arrayToObject(fields, 'path', action));
+  _mapToFields(fields, action) {
+    return resolveAllKeys(arrayToObject(fields, 'path', action)).catch(error => {
+      if (!error.errors) {
+        throw error;
+      }
+      const errorCopy = new Error(error.message || error.toString());
+      errorCopy.errors = Object.values(error.errors);
+      throw errorCopy;
+    });
   }
 
   _fieldsFromObject(obj) {
@@ -814,7 +875,12 @@ module.exports = class List {
   }
 
   async _resolveInput(resolvedData, existingItem, context, operation, originalInput) {
-    const args = { resolvedData, existingItem, context, adapter: this.adapter, originalInput };
+    const args = {
+      resolvedData,
+      existingItem,
+      originalInput,
+      actions: mapKeys(this.hooksActions, hook => hook(context)),
+    };
     const fields = this._fieldsFromObject(resolvedData);
 
     resolvedData = await this._mapToFields(fields, field =>
@@ -835,13 +901,21 @@ module.exports = class List {
   }
 
   async _validateInput(resolvedData, existingItem, context, operation, originalInput) {
-    const args = { resolvedData, existingItem, context, adapter: this.adapter, originalInput };
+    const args = {
+      resolvedData,
+      existingItem,
+      originalInput,
+      actions: mapKeys(this.hooksActions, hook => hook(context)),
+    };
     const fields = this._fieldsFromObject(resolvedData);
     await this._validateHook(args, fields, operation, 'validateInput');
   }
 
   async _validateDelete(existingItem, context, operation) {
-    const args = { existingItem, context, adapter: this.adapter };
+    const args = {
+      existingItem,
+      actions: mapKeys(this.hooksActions, hook => hook(context)),
+    };
     const fields = this.fields;
     await this._validateHook(args, fields, operation, 'validateDelete');
   }
@@ -874,22 +948,38 @@ module.exports = class List {
   }
 
   async _beforeChange(resolvedData, existingItem, context, originalInput) {
-    const args = { resolvedData, existingItem, context, adapter: this.adapter, originalInput };
+    const args = {
+      resolvedData,
+      existingItem,
+      originalInput,
+      actions: mapKeys(this.hooksActions, hook => hook(context)),
+    };
     await this._runHook(args, resolvedData, 'beforeChange');
   }
 
   async _beforeDelete(existingItem, context) {
-    const args = { existingItem, context, adapter: this.adapter };
+    const args = {
+      existingItem,
+      actions: mapKeys(this.hooksActions, hook => hook(context)),
+    };
     await this._runHook(args, existingItem, 'beforeDelete');
   }
 
   async _afterChange(updatedItem, existingItem, context, originalInput) {
-    const args = { updatedItem, originalInput, existingItem, context, adapter: this.adapter };
+    const args = {
+      updatedItem,
+      originalInput,
+      existingItem,
+      actions: mapKeys(this.hooksActions, hook => hook(context)),
+    };
     await this._runHook(args, updatedItem, 'afterChange');
   }
 
   async _afterDelete(existingItem, context) {
-    const args = { existingItem, context, adapter: this.adapter };
+    const args = {
+      existingItem,
+      actions: mapKeys(this.hooksActions, hook => hook(context)),
+    };
     await this._runHook(args, existingItem, 'afterDelete');
   }
 
