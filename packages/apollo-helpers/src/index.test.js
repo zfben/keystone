@@ -14,6 +14,8 @@ import { gen, sampleOne } from 'testcheck';
 
 const alphanumGenerator = gen.alphaNumString.notEmpty();
 
+jest.setTimeout(10000);
+
 test(
   'something',
   keystoneMongoTest(
@@ -42,12 +44,7 @@ test(
       let _fetch = makeFetch(server.server.app);
       // just so none of supertest-fetch's things get exposed
       // we only use it to get the fetch api from a express app
-      let promises = [];
-      let fetch = (...args) => {
-        let promise = _fetch(...args).then(val => val);
-        promises.push(promise);
-        return promise;
-      };
+      let fetch = (...args) => _fetch(...args).then(val => val);
 
       const users = await Promise.all([
         create('User', { name: 'Jess' }),
@@ -74,13 +71,14 @@ test(
             <Query
               query={gql`
                 query Users {
-                  allUsers {
+                  allUsers(orderBy: "name_DESC") {
                     name
                   }
                 }
               `}
             >
               {({ data }) => {
+                console.log(data);
                 latestData = data;
                 return (
                   <React.Fragment>{data ? data.allUsers.map(x => x.name) : null}</React.Fragment>
@@ -96,6 +94,7 @@ test(
                   }
                 }
               `}
+              invalidateTypes="User"
             >
               {thing => {
                 createItem = thing;
@@ -107,22 +106,35 @@ test(
       );
 
       let inst = renderer.create(<App />);
-      await Promise.all(promises);
-      promises = [];
       await wait(() => {
         expect(latestData).toBeTruthy();
       });
       expect(inst.toJSON()).toMatchInlineSnapshot(`
 Array [
-  "Jess",
-  "Johanna",
   "Sam",
+  "Johanna",
+  "Jess",
 ]
 `);
 
-      await createItem();
+      await createItem({});
+      await fetch('/admin/api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+      query Users {
+        allUsers {
+          name
+        }
+      }
+    `,
+        }),
+      }).then(x => x.json());
       await wait(() => {
-        expect(inst.toJSON()).toBe(4);
+        expect(inst.toJSON()).toHaveLength(4);
       });
       expect(inst.toJSON()).toMatchInlineSnapshot(`
       Array [
