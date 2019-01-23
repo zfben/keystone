@@ -187,11 +187,11 @@ module.exports = class List {
       return this.fieldsByPath[path];
     });
 
-    this.adapter.prepareModel();
-
-    this.views = mapKeys(sanitisedFieldsConfig, fieldConfig => ({
-      ...fieldConfig.type.views,
-    }));
+    this.views = mapKeys(sanitisedFieldsConfig, (fieldConfig, path) =>
+      this.fieldsByPath[path].extendViews({
+        ...fieldConfig.type.views,
+      })
+    );
 
     this.hooksActions = {
       /**

@@ -50,16 +50,31 @@ exports.onCreateBabelConfig = ({ actions, stage }) => {
     name: `@babel/preset-flow`,
     stage,
   });
+  actions.setBabelPlugin({
+    name: `babel-plugin-extract-react-types`,
+    stage,
+  });
 };
 
 exports.onCreateWebpackConfig = ({ actions }) => {
+  // we need these aliases so that we use the src version of the packages that require builds
+  let preconstructAliases = require('preconstruct').aliases.webpack(path.join(__dirname, '..'));
+
+  // a temporary hack since the website isn't part of the monorepo
+  Object.keys(preconstructAliases).forEach(key => {
+    preconstructAliases[key] = path.join(
+      __dirname,
+      '..',
+      'packages',
+      'arch',
+      'packages',
+      preconstructAliases[key].replace('@arch-ui/', '')
+    );
+  });
+
   actions.setWebpackConfig({
     resolve: {
-      alias: {
-        // the website isn't part of the monorepo right now so we're aliasing it
-        // so that the components can be used in the website
-        '@voussoir/ui': path.join(__dirname, '..', 'packages', 'ui'),
-      },
+      alias: preconstructAliases,
     },
   });
 };

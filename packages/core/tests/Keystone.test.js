@@ -2,13 +2,16 @@ const Keystone = require('../Keystone');
 const List = require('../List');
 const { Text, Relationship } = require('@voussoir/fields');
 
-class MockType {}
+class MockType {
+  extendViews(views) {
+    return views;
+  }
+}
 
 class MockFieldAdapter {}
 
 class MockListAdapter {
   newFieldAdapter = () => new MockFieldAdapter();
-  prepareModel = () => {};
 }
 
 class MockAdapter {
@@ -59,6 +62,9 @@ test('unique typeDefs', () => {
     }
     getGqlAuxMutations() {
       return ['mutateFoo: Boolean'];
+    }
+    extendViews(views) {
+      return views;
     }
   }
 
