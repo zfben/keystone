@@ -43,6 +43,7 @@ async function getGatsbyConfig() {
         options: { name: 'tutorials', path: `${__dirname}/tutorials/` },
       },
       `gatsby-plugin-sharp`,
+      'gatsby-source-field-types',
       {
         resolve: `gatsby-mdx`,
         options: {

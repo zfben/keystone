@@ -177,6 +177,13 @@ server.app.get('/reset-db', (req, res) => {
   reset();
 });
 
+let schema = `
+      scalar Upload
+      ${keystone.getTypeDefs({ skipAccessControl: true }).join('\n')}
+    `;
+
+console.log(schema);
+
 server.app.use(staticRoute, server.express.static(staticPath));
 
 async function start() {
