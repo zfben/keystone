@@ -90,6 +90,7 @@
     "gatsby-transformer-remark": "^2.3.0",
     "get-selection-range": "^0.1.0",
     "globby": "^9.1.0",
+    "graphiql": "^0.13.0",
     "graphql": "^14.0.2",
     "graphql-playground-html": "^1.6.12",
     "graphql-playground-react": "^1.7.19",
@@ -200,7 +201,9 @@
     ]
   },
   "jest": {
-    "setupFilesAfterEnv": ["./jest/setup.js"],
+    "setupFilesAfterEnv": [
+      "./jest/setup.js"
+    ],
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "/node_modules/",
@@ -241,9 +244,9 @@
     "pino-colada": "^1.4.4",
     "prettier": "^1.15.3",
     "start-server-and-test": "^1.7.11",
+    "supertest-light": "^1.0.2",
     "terminal-link": "^1.2.0",
     "testcheck": "^1.0.0-rc.2",
-    "supertest-light": "^1.0.2",
     "tmp": "^0.0.33"
   }
 }

@@ -52,9 +52,6 @@ async function getGatsbyConfig() {
           globalScope: `import { Props } from '${require.resolve('./src/components/props')}'
           export default { Props }
           `,
-          defaultLayouts: {
-            default: require.resolve('./src/components/mdx-renderer.js'),
-          },
           gatsbyRemarkPlugins: [
             { resolve: require.resolve('./plugins/gatsby-remark-fix-links') },
 

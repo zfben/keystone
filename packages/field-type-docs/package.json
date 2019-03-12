@@ -1,0 +1,19 @@
+{
+  "name": "@keystone-alpha/field-type-docs",
+  "version": "1.0.0",
+  "author": "The Keystone Development Team",
+  "license": "MIT",
+  "main": "src/index.js",
+  "peerDependencies": {
+    "react": "^16.8.0"
+  },
+  "devDependencies": {
+    "react": "^16.8.0"
+  },
+  "dependencies": {
+    "@arch-ui/input": "^0.0.2",
+    "@emotion/core": "^10.0.4",
+    "graphiql": "^0.13.0",
+    "graphql": "^14.0.2"
+  }
+}

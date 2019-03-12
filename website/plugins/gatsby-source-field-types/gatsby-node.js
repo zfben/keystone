@@ -1,7 +1,7 @@
 let path = require('path');
 let fs = require('fs-extra');
-let { Keystone } = require('@voussoir/core');
-let { MongooseAdapter } = require('@voussoir/adapter-mongoose');
+let { Keystone } = require('@keystone-alpha/keystone');
+let { MongooseAdapter } = require('@keystone-alpha/adapter-mongoose');
 
 let fieldsPath = path.resolve(__dirname, '..', '..', '..', 'packages', 'fields', 'types');
 
@@ -22,10 +22,9 @@ exports.sourceNodes = async ({ actions: { createNode }, createNodeId, createCont
 
   for (let type of types) {
     let keystone = new Keystone({ name: 'Keystone App', adapter: new MongooseAdapter() });
-    keystone.createList('Todo', {
-      schemaDoc: 'A list of things which need to be done',
+    keystone.createList('ListName', {
       fields: {
-        field: { type, schemaDoc: 'This is the thing you need to do' },
+        field: { type },
       },
     });
     let schema = `
@@ -33,10 +32,10 @@ exports.sourceNodes = async ({ actions: { createNode }, createNodeId, createCont
     ${keystone.getTypeDefs({ skipAccessControl: true }).join('\n')}
   `;
 
-    let data = { schema };
+    let data = { schema, type: type.type };
     let content = JSON.stringify(data);
     let nodeMeta = {
-      id: createNodeId(`keystone-field-type-${type.name}`),
+      id: createNodeId(`keystone-field-type-${type.type}`),
       parent: null,
       children: [],
       internal: {
@@ -46,7 +45,6 @@ exports.sourceNodes = async ({ actions: { createNode }, createNodeId, createCont
         contentDigest: createContentDigest(data),
       },
     };
-    console.log('created');
     createNode({ ...nodeMeta, ...data });
   }
 };
