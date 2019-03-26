@@ -3,7 +3,8 @@
 import React from 'react';
 
 import List from '../classes/List';
-import { views, readViews, preloadViews } from '../FIELD_TYPES';
+import { readViews, preloadViews } from '@keystone-alpha/field-views-loader/loader';
+import { views } from '../FIELD_TYPES';
 
 // TODO: Pull this off `window.X` to support server side permission queries
 const { lists, ...srcMeta } = KEYSTONE_ADMIN_META;

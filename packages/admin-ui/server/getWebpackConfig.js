@@ -37,6 +37,7 @@ module.exports = function({ adminMeta, entry }) {
               '@babel/plugin-syntax-dynamic-import',
               '@babel/proposal-class-properties',
               '@babel/proposal-object-rest-spread',
+              ['@babel/plugin-transform-runtime', { useESModules: true }],
               'emotion',
             ],
           },
@@ -73,7 +74,7 @@ module.exports = function({ adminMeta, entry }) {
   return {
     mode,
     context: path.resolve(__dirname, '../client/'),
-    devtool: mode === 'development' ? 'inline-source-map' : undefined,
+    devtool: 'source-map',
     entry:
       mode === 'production' ? entryPath : [entryPath, 'webpack-hot-middleware/client?reload=true'],
     output: {

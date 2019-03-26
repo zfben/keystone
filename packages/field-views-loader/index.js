@@ -77,40 +77,6 @@ module.exports = function() {
     .join(',\n')}\n}`;
 
   return `
-  let promiseCache = new Map();
-  let valueCache = new Map();
-
-  function loadView(view) {
-    if (promiseCache.has(view)) {
-      return promiseCache.get(view);
-    }
-    let promise = view().then(value => {
-      valueCache.set(view, value);
-    });
-    promiseCache.set(view, promise);
-    return promise;
-  }
-
-  export function preloadViews(views) {
-    views.forEach(loadView);
-  }
-
-  export function readViews(views) {
-    let promises = [];
-    let values = [];
-    views.forEach(view => {
-      if (valueCache.has(view)) {
-        values.push(valueCache.get(view));
-      } else {
-        promises.push(loadView(view));
-      }
-    });
-    if (promises.length) {
-      throw Promise.all(promises);
-    }
-    return values;
-  }
-
   function interopDefault(mod) {
     return mod.default ? mod.default : mod;
   }
