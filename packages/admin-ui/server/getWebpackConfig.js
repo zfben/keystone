@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const { enableDevFeatures, mode } = require('./env');
 
@@ -85,6 +86,7 @@ module.exports = function({ adminMeta, entry }) {
     // right now this is just noise
     performance: { hints: false },
     plugins: [
+      new BundleAnalyzerPlugin(),
       environmentPlugin,
       templatePlugin,
       ...(mode === 'development' ? [new webpack.HotModuleReplacementPlugin()] : []),
@@ -99,7 +101,8 @@ module.exports = function({ adminMeta, entry }) {
         // that we use so we alias react the react resolved from the admin ui
         // which depends on the version of react that keystone uses
         react$: require.resolve('react'),
-        'react-dom$': require.resolve('react-dom'),
+        'react-dom$': require.resolve('react-dom/profiling'),
+        'scheduler/tracing': 'scheduler/tracing-profiling',
         ...(() => {
           try {
             return require('preconstruct').aliases.webpack(path.join(__dirname, '..', '..', '..'));

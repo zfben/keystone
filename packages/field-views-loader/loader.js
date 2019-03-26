@@ -1,12 +1,25 @@
 let promiseCache = new Map();
+let valueCache = new Map();
 
-function loadView([importer]) {
-  if (promiseCache.has(importer)) {
-    return promiseCache.get(importer);
+function interopDefault(mod) {
+  return mod.default ? mod.default : mod;
+}
+
+function loadView(view) {
+  if (promiseCache.has(view)) {
+    return promiseCache.get(view);
   }
-  let ret = importer();
-  promiseCache.set(importer, ret);
-  return ret;
+  let thing = view();
+  if (typeof thing.then === 'function') {
+    let promise = thing.then(value => {
+      valueCache.set(view, interopDefault(value));
+    });
+    promiseCache.set(view, promise);
+    return promise;
+  } else {
+    promiseCache.set(view, Promise.resolve());
+    valueCache.set(view, interopDefault(thing));
+  }
 }
 
 export function preloadViews(views) {
@@ -17,12 +30,14 @@ export function readViews(views) {
   let promises = [];
   let values = [];
   views.forEach(view => {
-    // eslint-disable-next-line no-undef
-    if (__webpack_modules__[view.id]) {
-      // eslint-disable-next-line no-undef
-      return __webpack_require__(view.id);
+    // we want to load before we try the cache because
+    // the view might load synchronously
+    let promise = loadView(view);
+    if (valueCache.has(view)) {
+      values.push(valueCache.get(view));
+    } else {
+      promises.push(promise);
     }
-    promises.push(loadView(view));
   });
   if (promises.length) {
     throw Promise.all(promises);

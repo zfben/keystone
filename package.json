@@ -91,6 +91,7 @@
     "extract-stack": "^1.0.0",
     "facepaint": "^1.2.1",
     "falsey": "^1.0.0",
+    "fast-deep-equal": "^2.0.1",
     "fast-memoize": "^2.4.0",
     "file-loader": "^3.0.1",
     "flushable": "^1.0.0",
@@ -197,6 +198,7 @@
     "underscore.string": "^3.3.5",
     "unist-util-visit": "^1.4.0",
     "webpack": "4.28.4",
+    "webpack-bundle-analyzer": "^3.1.0",
     "webpack-dev-middleware": "^3.6.1",
     "webpack-hot-middleware": "^2.24.3",
     "webpack-require-weak": "^1.0.1"

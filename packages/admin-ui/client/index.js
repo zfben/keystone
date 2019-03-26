@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense, useMemo, lazy } from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloProvider } from 'react-apollo';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -21,7 +21,8 @@ import ListPage from './pages/List';
 import ListNotFoundPage from './pages/ListNotFound';
 import ItemPage from './pages/Item';
 import InvalidRoutePage from './pages/InvalidRoute';
-import StyleGuidePage from './pages/StyleGuide';
+
+let StyleGuidePage = lazy(() => import('./pages/StyleGuide'));
 
 const Keystone = () => {
   let adminMeta = useAdminMeta();
@@ -39,7 +40,11 @@ const Keystone = () => {
                   <Switch>
                     <Route
                       path={`${adminPath}/style-guide/:page?`}
-                      render={() => <StyleGuidePage {...adminMeta} />}
+                      render={() => (
+                        <Suspense fallback={null}>
+                          <StyleGuidePage {...adminMeta} />
+                        </Suspense>
+                      )}
                     />
                     <Route exact path={`${adminPath}`} render={() => <HomePage {...adminMeta} />} />
                     <Route

@@ -72,14 +72,11 @@ module.exports = function() {
 
   let loaders = `{\n${[...allPaths]
     .map(path => {
-      return `'${path}': () => import('${path}').then(interopDefault)`;
+      return `'${path}': () => ${path.includes('Controller') ? `require` : `import`}('${path}')`;
     })
     .join(',\n')}\n}`;
 
   return `
-  function interopDefault(mod) {
-    return mod.default ? mod.default : mod;
-  }
 
   let loaders = ${loaders};
 
