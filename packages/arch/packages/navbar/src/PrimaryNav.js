@@ -17,7 +17,7 @@ export const NavGroupIcons = styled.div({
 });
 
 export const PrimaryNav = styled.nav({
-  backgroundColor: 'rgba(9, 30, 66, 0.02)',
+  backgroundColor: '#f8f8f8',
   boxSizing: 'border-box',
   display: 'flex',
   flexFlow: 'column nowrap',
@@ -63,8 +63,7 @@ export const PrimaryNavItem = styled(ItemElement)(({ depth, isSelected }) => {
   const selectedStyles = isSelected
     ? {
         '&, :hover, :active, :focus': {
-          borderLeftColor: colors.B.base,
-          backgroundColor: colors.B.A10,
+          borderRightColor: colors.B.base,
           fontWeight: 500,
         },
       }
@@ -72,26 +71,21 @@ export const PrimaryNavItem = styled(ItemElement)(({ depth, isSelected }) => {
 
   return {
     border: 0,
-    borderLeft: '3px solid transparent',
-    color: colors.N90,
+    borderRight: '6px solid transparent',
+    color: isSelected ? colors.B.base : colors.N90,
     display: 'block',
-    marginBottom: 2,
+    marginBottom: 8,
     overflow: 'hidden',
     paddingLeft: depth ? PRIMARY_NAV_GUTTER * depth : PRIMARY_NAV_GUTTER,
     paddingRight: PRIMARY_NAV_GUTTER,
-    paddingBottom: gridSize,
-    paddingTop: gridSize,
+    paddingBottom: gridSize * 2,
+    paddingTop: gridSize * 2,
     textDecoration: 'none',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
 
-    ':hover, :focus': {
-      backgroundColor: colors.B.A5,
-      color: colors.N100,
+    ':hover, :focus, :active': {
       textDecoration: 'none',
-    },
-    ':active': {
-      backgroundColor: colors.B.A10,
     },
 
     ...selectedStyles,

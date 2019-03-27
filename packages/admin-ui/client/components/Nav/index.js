@@ -56,7 +56,6 @@ const Relative = styled(Col)({
   position: 'relative',
 });
 const GrabHandle = styled.div({
-  backgroundColor: 'rgba(9, 30, 66, 0.2)',
   bottom: 0,
   cursor: 'col-resize',
   opacity: 0.5,
@@ -226,6 +225,7 @@ let PrimaryNavContent = memo(
 
     return (
       <Inner>
+        Logo?
         <Title
           as={Link}
           to={adminPath}
@@ -234,7 +234,7 @@ let PrimaryNavContent = memo(
           css={{
             color: colors.N90,
             textDecoration: 'none',
-            alignSelf: 'stretch',
+            alignSelf: 'center',
             marginLeft: PRIMARY_NAV_GUTTER,
             marginRight: PRIMARY_NAV_GUTTER,
           }}

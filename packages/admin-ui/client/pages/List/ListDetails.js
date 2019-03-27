@@ -357,6 +357,10 @@ class ListDetails extends Component<Props, State> {
           <div ref={this.measureElementRef} />
 
           <Container isFullWidth={isFullWidth}>
+            <Title as="h1" margin="both" css={{ fontSize: 40, fontWeight: 700 }}>
+              {list.plural}
+            </Title>
+
             <Title as="h1" margin="both">
               {itemsCount > 0 ? list.formatCount(itemsCount) : list.plural}
               <span>, by</span>
@@ -422,7 +426,7 @@ class ListDetails extends Component<Props, State> {
               </Popout>
 
               {list.access.create ? (
-                <IconButton appearance="create" icon={PlusIcon} onClick={this.openCreateModal}>
+                <IconButton appearance="primary" icon={PlusIcon} onClick={this.openCreateModal}>
                   Create
                 </IconButton>
               ) : null}

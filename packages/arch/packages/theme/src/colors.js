@@ -39,7 +39,7 @@ function makeVariants(color): Variants {
   return variants;
 }
 
-const blue = '#2684FF';
+const blue = '#2F80ED';
 const green = '#34c240';
 const red = '#d64242';
 const yellow = '#fa9f47';
@@ -59,7 +59,7 @@ export default {
   ...neutrals,
 
   // named
-  page: '#FAFBFC',
+  page: '#FAFBFB',
   text: neutrals.N90,
   ...intent,
   green,
