@@ -1,28 +1,29 @@
 import gql from 'graphql-tag';
 
-import FieldTypes from '../FIELD_TYPES';
-import { arrayToObject } from '@voussoir/utils';
+import { arrayToObject } from '@keystone-alpha/utils';
 
 export const gqlCountQueries = lists => gql`{
   ${lists.map(list => list.countQuery()).join('\n')}
 }`;
 
 export default class List {
-  constructor(config, adminMeta) {
+  constructor(config, adminMeta, views) {
     this.config = config;
+    this.adminMeta = adminMeta;
 
     // TODO: undo this
     Object.assign(this, config);
 
     this.fields = config.fields.map(fieldConfig => {
-      const { Controller } = FieldTypes[config.key][fieldConfig.path];
-      return new Controller(fieldConfig, this, adminMeta);
+      const [Controller] = adminMeta.readViews([views[fieldConfig.path].Controller]);
+      return new Controller(fieldConfig, this, adminMeta, views[fieldConfig.path]);
     });
 
     this.createMutation = gql`
       mutation create($data: ${this.gqlNames.createInputName}!) {
         ${this.gqlNames.createMutationName}(data: $data) {
           id
+          _label_
         }
       }
     `;

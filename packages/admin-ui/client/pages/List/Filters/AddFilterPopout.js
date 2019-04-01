@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { Component, createRef } from 'react';
+import { Component, createRef, Suspense } from 'react';
 import { Transition, TransitionGroup } from 'react-transition-group';
 
 import { ChevronLeftIcon, ChevronRightIcon, AlertIcon } from '@arch-ui/icons';
@@ -9,14 +9,11 @@ import { A11yText } from '@arch-ui/typography';
 import { Alert } from '@arch-ui/alert';
 import { OptionPrimitive } from '@arch-ui/options';
 import Select from '@arch-ui/select';
+import { LoadingSpinner } from '@arch-ui/loading';
 
 import FieldSelect from '../FieldSelect';
 import PopoutForm from './PopoutForm';
 import { POPOUT_GUTTER } from '../../../components/Popout';
-
-// This import is loaded by the @voussoir/field-views-loader loader.
-// It imports all the views required for a keystone app by looking at the adminMetaData
-import FieldTypes from '../../../FIELD_TYPES';
 
 const EventCatcher = props => (
   <div
@@ -88,6 +85,8 @@ type State = {
   filter: Object,
   value: string,
 };
+
+let Render = ({ children }) => children();
 
 export default class AddFilterPopout extends Component<Props, State> {
   state = getInitialState();
@@ -221,6 +220,10 @@ export default class AddFilterPopout extends Component<Props, State> {
             exiting: { transform: 'translateX(-100%)' },
             exited: { transform: 'translateX(-100%)' },
           };
+          this.props.fields[0].adminMeta.preloadViews(
+            this.props.fields.map(({ views }) => views.Filter).filter(x => x)
+          );
+
           const style = { ...base, ...states[state] };
           return (
             <div ref={ref} style={style}>
@@ -266,7 +269,6 @@ export default class AddFilterPopout extends Component<Props, State> {
             exited: { transform: 'translateX(100%)' },
           };
           const style = { ...base, ...states[state] };
-          const { Filter } = FieldTypes[field.list.key][field.path];
           const Code = p => (
             <code
               css={{
@@ -278,7 +280,7 @@ export default class AddFilterPopout extends Component<Props, State> {
             />
           );
 
-          if (!Filter) {
+          if (!field.views.Filter) {
             return (
               <div ref={ref} style={style}>
                 <Alert appearance="warning" variant="bold">
@@ -314,13 +316,29 @@ export default class AddFilterPopout extends Component<Props, State> {
                   />
                 </EventCatcher>
               ) : null}
-              <Filter
-                innerRef={this.filterRef}
-                field={field}
-                filter={filter}
-                value={this.state.value}
-                onChange={this.onChangeFilter}
-              />
+              <Suspense
+                fallback={
+                  <div css={{ display: 'flex', justifyContent: 'center' }}>
+                    <LoadingSpinner size={32} />
+                  </div>
+                }
+              >
+                <Render>
+                  {() => {
+                    let [Filter] = field.adminMeta.readViews([field.views.Filter]);
+
+                    return (
+                      <Filter
+                        innerRef={this.filterRef}
+                        field={field}
+                        filter={filter}
+                        value={this.state.value}
+                        onChange={this.onChangeFilter}
+                      />
+                    );
+                  }}
+                </Render>
+              </Suspense>
             </div>
           );
         }}

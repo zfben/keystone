@@ -1,12 +1,12 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, useMemo, useCallback, Suspense } from 'react';
 import { Mutation } from 'react-apollo';
 import { Button } from '@arch-ui/button';
 import Drawer from '@arch-ui/drawer';
 import { FieldContainer, FieldLabel, FieldInput } from '@arch-ui/fields';
 import Select from '@arch-ui/select';
-import { omit } from '@voussoir/utils';
+import { omit } from '@keystone-alpha/utils';
 
-import FieldTypes from '../FIELD_TYPES';
+let Render = ({ children }) => children();
 
 class UpdateManyModal extends Component {
   constructor(props) {
@@ -39,15 +39,6 @@ class UpdateManyModal extends Component {
       case 'Enter':
         return this.onUpdate();
     }
-  };
-  onChange = (field, value) => {
-    const { item } = this.state;
-    this.setState({
-      item: {
-        ...item,
-        [field.path]: value,
-      },
-    });
   };
   handleSelect = selected => {
     const { list } = this.props;
@@ -107,16 +98,33 @@ class UpdateManyModal extends Component {
               />
             </FieldInput>
           </FieldContainer>
-          {selectedFields.map(field => {
-            const { Field } = FieldTypes[list.key][field.path];
+          {selectedFields.map((field, i) => {
             return (
-              <Field
-                item={item}
-                field={field}
-                key={field.path}
-                onChange={this.onChange}
-                renderContext="dialog"
-              />
+              <Render key={field.path}>
+                {() => {
+                  let [Field] = field.adminMeta.readViews([field.views.Field]);
+                  let onChange = useCallback(value => {
+                    this.setState(({ item }) => ({
+                      item: {
+                        ...item,
+                        [field.path]: value,
+                      },
+                    }));
+                  });
+                  return useMemo(
+                    () => (
+                      <Field
+                        autoFocus={!i}
+                        field={field}
+                        value={item[field.path]}
+                        onChange={onChange}
+                        renderContext="dialog"
+                      />
+                    ),
+                    [i, field, item[field.path], onChange]
+                  );
+                }}
+              </Render>
             );
           })}
         </Fragment>
@@ -132,11 +140,13 @@ export default class UpdateManyModalWithMutation extends Component {
     // to update many things all at once. This doesn't appear to be common pattern
     // across the board.
     return (
-      <Mutation mutation={list.updateMutation}>
-        {(updateItem, { loading }) => (
-          <UpdateManyModal updateItem={updateItem} isLoading={loading} {...this.props} />
-        )}
-      </Mutation>
+      <Suspense fallback={null}>
+        <Mutation mutation={list.updateMutation}>
+          {(updateItem, { loading }) => (
+            <UpdateManyModal updateItem={updateItem} isLoading={loading} {...this.props} />
+          )}
+        </Mutation>
+      </Suspense>
     );
   }
 }

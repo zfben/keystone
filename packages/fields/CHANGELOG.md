@@ -1,4 +1,193 @@
+# @keystone-alpha/fields
+
+## 3.0.2
+
+- [patch][03ea2b1d](https://github.com/keystonejs/keystone-5/commit/03ea2b1d):
+
+  - Bump version of @arch-ui/layout
+
+## 3.0.1
+
+- Updated dependencies [98c02a46](https://github.com/keystonejs/keystone-5/commit/98c02a46):
+  - @keystone-alpha/access-control@1.0.2
+  - @keystone-alpha/adapter-knex@1.0.3
+  - @keystone-alpha/adapter-mongoose@1.0.3
+  - @keystone-alpha/utils@2.0.0
+
+## 3.0.0
+
+- [patch][39067f44](https://github.com/keystonejs/keystone-5/commit/39067f44):
+
+  - Add text date and time pickers
+
+- [major][9a9f214a](https://github.com/keystonejs/keystone-5/commit/9a9f214a):
+
+  - Build field type views before publishing to npm and stop running Babel on Keystone packages in node_modules in the Admin UI
+
+## 2.0.0
+
+- [major][dcb93771](https://github.com/keystonejs/keystone-5/commit/dcb93771):
+
+  - Put field type views onto field controllers
+
+- [patch][11c372fa](https://github.com/keystonejs/keystone-5/commit/11c372fa):
+
+  - Update minor-level dependencies
+
+- [patch][3a775092](https://github.com/keystonejs/keystone-5/commit/3a775092):
+
+  - Update dependencies
+
+- [patch][619b17c2](https://github.com/keystonejs/keystone-5/commit/619b17c2):
+
+  - Reformat code using latest version of Prettier (1.16.4)
+
+- [patch][d9a1be91](https://github.com/keystonejs/keystone-5/commit/d9a1be91):
+
+  - Update dependencies
+
+- [patch][7417ea3a](https://github.com/keystonejs/keystone-5/commit/7417ea3a):
+
+  - Update patch-level dependencies
+
+- Updated dependencies [96015257](https://github.com/keystonejs/keystone-5/commit/96015257):
+  - @arch-ui/day-picker@0.0.3
+
+## 1.0.1
+
+- [patch][1f0bc236](https://github.com/keystonejs/keystone-5/commit/1f0bc236):
+
+  - Update the package.json author field to "The Keystone Development Team"
+
+- [patch][9534f98f](https://github.com/keystonejs/keystone-5/commit/9534f98f):
+
+  - Add README.md to package
+
+- [patch][c0e64c01](https://github.com/keystonejs/keystone-5/commit/c0e64c01):
+
+  - Move system tests into api-tests package
+
+## 1.0.0
+
+- [major] 8b6734ae:
+
+  - This is the first release of keystone-alpha (previously voussoir).
+    All packages in the `@voussoir` namespace are now available in the `@keystone-alpha` namespace, starting at version `1.0.0`.
+    To upgrade your project you must update any `@voussoir/<foo>` dependencies in `package.json` to point to `@keystone-alpha/<foo>: "^1.0.0"` and update any `require`/`import` statements in your code.
+
 # @voussoir/fields
+
+## 3.1.0
+
+- [patch] 6fa810f7:
+
+  - Rename `@voussoir/core` -> `@voussoir/keystone`. This is to free up the
+    `@voussoir/core` package for a different purpose, and make the main import for
+    new Keystone projects be `@voussoir/keystone`. The exports have stayed the
+    same.
+
+- [patch] 113e16d4:
+
+  - Remove unused dependencies
+
+- [minor] eaab547c:
+
+  - Allow adding related items from the Relationship field
+
+- [patch] b155d942:
+
+  - Update mongo/mongoose dependencies
+
+- [patch] d035c199:
+
+  - Re-enable check for bcrypt regex in <password>\_is_set
+
+- Updated dependencies [23c3fee5]:
+  - @arch-ui/button@0.0.2
+  - @arch-ui/controls@0.0.2
+  - @arch-ui/day-picker@0.0.2
+  - @arch-ui/drawer@0.0.2
+  - @arch-ui/fields@0.0.2
+  - @arch-ui/filters@0.0.2
+  - @arch-ui/icons@0.0.2
+  - @arch-ui/input@0.0.2
+  - @arch-ui/layout@0.0.2
+  - @arch-ui/lozenge@0.0.2
+  - @arch-ui/options@0.0.2
+  - @arch-ui/popout@0.0.2
+  - @arch-ui/select@0.0.2
+  - @arch-ui/theme@0.0.2
+  - @arch-ui/tooltip@0.0.2
+  - @arch-ui/typography@0.0.2
+
+## 3.0.0
+
+- [patch] 513c7b63:
+
+  - Rename MongoSelectInterface to MongoRelationshipInterface in the relationship field type
+
+- [minor] 5f891cff:
+
+  - Add a setupHooks method to BaseFieldAdapter
+
+- [patch] 723371a0:
+
+  - Correctly surface nested errors from GraphQL
+
+- [major] 53e27d75:
+
+  - Removes methods from Mongoose adapter classes: getFieldAdapterByQueryConditionKey, getSimpleQueryConditions, getRelationshipQueryConditions, getQueryConditions, getRelationshipQueryConditions, getRefListAdapter, hasQueryCondition.
+
+- [minor] 4faf5cfd:
+
+  - Add withMeta flag to Relationship field for disabling meta queries
+
+- [patch] 306f0b7e:
+
+  - Remove recalcHeight prop from Filter props
+
+- [patch] 266b5733:
+
+  - Don't try to resolve nested mutations which will be later backfilled
+
+- [minor] dc53492c:
+
+  - Add support for the Knex adapter
+
+- [patch] 7ce811ab:
+
+  - Converts mongoose ObjectIds to string in File field types
+
+- [major] 5f8043b5:
+
+  - Simplify Field component api
+    - Replace item prop with value prop which is equal to item[field.path]
+    - Replace itemErrors prop with error prop which is equal to itemErrors[field.path]
+    - Change onChange prop so that it only accepts the value rather than the field and the value
+    - Remove initialData prop which wasn't used in a Field component and was only pass to the Field components in one the places where the Field component is used
+
+- [minor] f37a8086:
+
+  - Can now dump the GraphQL schema with keystone.dumpSchema(filePath)
+
+- [patch] 9f2ee393:
+
+  - Add adapter parameter to setupServer() and add multiAdapterRunners()
+
+- [patch] 860c3b80:
+
+  - Add a postConnect method to list adapters to capture all the work which needs to be done after the database has been connected to
+
+- Updated dependencies [aca26f71]:
+- Updated dependencies [6471fc4a]:
+- Updated dependencies [6471fc4a]:
+- Updated dependencies [48773907]:
+- Updated dependencies [a3d5454d]:
+  - @voussoir/access-control@0.4.1
+  - @voussoir/adapter-mongoose@2.0.0
+  - @voussoir/test-utils@1.0.0
+  - @voussoir/utils@1.0.0
+  - @voussoir/adapter-knex@0.0.2
 
 ## 2.0.1
 

@@ -1,7 +1,8 @@
 {
-  "name": "@voussoir/email",
-  "version": "0.0.1",
-  "author": "Jess Telford <hi+npm@jes.st> (https://jes.st)",
+  "name": "@keystone-alpha/email",
+  "description": "Easily send emails from a KeystoneJS application",
+  "version": "1.0.2",
+  "author": "The KeystoneJS Development Team",
   "license": "MIT",
   "engines": {
     "node": ">=8.4.0"
@@ -10,15 +11,18 @@
     "express-react-views": "^0.11.0",
     "keystone-email": "^1.1.0",
     "memoize-one": "^4.0.2",
+    "mjml": "^4.3.1",
     "pify": "^4.0.1"
   },
   "peerDependencies": {
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "mjml-react": "^1.0.51",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4"
   },
   "devDependencies": {
     "jade": "^1.11.0",
-    "react": "16.7.0-alpha.2",
-    "react-dom": "16.7.0-alpha.2"
+    "mjml-react": "^1.0.51",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4"
   }
 }

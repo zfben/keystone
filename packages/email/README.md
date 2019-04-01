@@ -1,4 +1,9 @@
-# Email Sending in Voussoir
+---
+section: packages
+title: Email Sending
+---
+
+# Email Sending
 
 Send emails via various transports, rendered with Express-compatible
 renderers.
@@ -21,8 +26,10 @@ There is a `jsx` renderer powered by `express-react-views`.
 
 Usage:
 
+`index.js`
+
 ```javascript
-const emailSender = require('@voussoir/email');
+const emailSender = require('@keystone-alpha/email');
 
 const jsxEmailSender = emailSender.jsx({
   // The directory containing the email templates
@@ -37,14 +44,83 @@ await jsxEmailSender('new-user.jsx').send(
 );
 ```
 
-_NOTE: The `jsx` renderer has a peer dependency on `react` & `react-dom`_.
+`emails/new-user.jsx`
+
+```javascript
+const React = require('react');
+
+module.exports = class extends React.Component {
+  render() {
+    return (
+      <html>
+        <body>
+          <div>Hello {this.props.name}</div>
+        </body>
+      </html>
+    );
+  }
+};
+```
+
+> NOTE: The `jsx` renderer has a peer dependency on `react` and `react-dom`
+
+### mjml
+
+There is support for [`mjml-react`](https://github.com/wix-incubator/mjml-react)
+using the `mjml` renderer.
+
+Usage:
+
+`index.js`
+
+```javascript
+const emailSender = require('@keystone-alpha/email');
+
+const mjmlEmailSender = emailSender.mjml({
+  // The directory containing the email templates
+  root: `${__dirname}/emails`,
+  // The transport to send the emails (see `keystone-email` docs)
+  transport: 'mailgun'
+});
+
+// NOTE: The `.jsx` extension is still used here
+await mjmlEmailSender('new-user.jsx').send(
+  { ... }, // renderer props
+  { ... }, // transport options (api keys, to/from, etc). See `keystone-email` docs
+);
+```
+
+`emails/new-user.jsx`
+
+```javascript
+const React = require('react');
+const { Mjml, MjmlBody, MjmlSection, MjmlColumn, MjmlText } = require('mjml-react');
+
+module.exports = class extends React.Component {
+  render() {
+    return (
+      <Mjml>
+        <MjmlBody width={500}>
+          <MjmlSection fullWidth backgroundColor="#efefef">
+            <MjmlColumn>
+              <MjmlText>Hello!</MjmlText>
+            </MjmlColumn>
+          </MjmlSection>
+        </MjmlBody>
+      </Mjml>
+    );
+  }
+};
+```
+
+> NOTE: The `mjml` renderer has a peer dependency on `react`, `react-dom`, and `mjml-react`
 
 ### Jade
 
 Usage:
 
 ```javascript
-const emailSender = require('@voussoir/email');
+const emailSender = require('@keystone-alpha/email');
 
 const jadeEmailSender = emailSender.jade({
   // The directory containing the email templates
@@ -66,7 +142,7 @@ Above are examples of using 2 renderers, `jsx`, and `jade`.
 In general, renderers are available directly on the exported object:
 
 ```javascript
-const emailSender = require('@voussoir/email');
+const emailSender = require('@keystone-alpha/email');
 
 emailSender.<renderer>(...);
 ```

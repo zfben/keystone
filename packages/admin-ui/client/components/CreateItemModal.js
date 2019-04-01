@@ -1,19 +1,15 @@
-import React, { Component, Fragment } from 'react';
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
+import { Component, Fragment, useCallback, useMemo, Suspense } from 'react';
 import { Mutation } from 'react-apollo';
-import styled from '@emotion/styled';
 
 import { Button } from '@arch-ui/button';
 import Drawer from '@arch-ui/drawer';
-import { resolveAllKeys, arrayToObject } from '@voussoir/utils';
+import { resolveAllKeys, arrayToObject } from '@keystone-alpha/utils';
 import { gridSize } from '@arch-ui/theme';
 import { AutocompleteCaptor } from '@arch-ui/input';
 
-import FieldTypes from '../FIELD_TYPES';
-
-const Body = styled.div({
-  marginBottom: gridSize,
-  marginTop: gridSize,
-});
+let Render = ({ children }) => children();
 
 class CreateItemModal extends Component {
   constructor(props) {
@@ -25,6 +21,14 @@ class CreateItemModal extends Component {
   onCreate = event => {
     // prevent form submission
     event.preventDefault();
+    // we have to stop propagation so that if this modal is inside another form
+    // it won't submit the form above it
+    // this will most likely happen when a CreateItemModal is nested inside
+    // another CreateItemModal when creating an item in a relationship field
+    // if you're thinking, why is this necessary, the modal is in a portal?
+    // it's important to remember that react events
+    // propagate through portals as if they aren't there
+    event.stopPropagation();
 
     const {
       list: { fields },
@@ -36,7 +40,10 @@ class CreateItemModal extends Component {
 
     resolveAllKeys(arrayToObject(fields, 'path', field => field.getValue(item)))
       .then(data => createItem({ variables: { data } }))
-      .then(this.props.onCreate);
+      .then(data => {
+        this.props.onCreate(data);
+        this.setState({ item: this.props.list.getInitialItemData() });
+      });
   };
   onClose = () => {
     const { isLoading } = this.props;
@@ -50,19 +57,20 @@ class CreateItemModal extends Component {
         return this.onClose();
     }
   };
-  onChange = (field, value) => {
-    const { item } = this.state;
-    this.setState({
-      item: {
-        ...item,
-        [field.path]: value,
-      },
-    });
-  };
   formComponent = props => <form autoComplete="off" onSubmit={this.onCreate} {...props} />;
   render() {
     const { isLoading, isOpen, list } = this.props;
     const { item } = this.state;
+    // we want to read all of the fields before reading the views individually
+    // note we want to _read_ before not just preload because the important thing
+    // isn't doing all the requests in parallel, that already happens
+    // what we're doing here is making sure there aren't a bunch of rerenders as
+    // each of the promises resolve
+    // this probably won't be necessary with concurrent mode/maybe just other react changes
+    // also, note that this is just an optimisation, it's not strictly necessary and it should
+    // probably be removed in the future because i'm guessing this will make performance _worse_ in concurrent mode
+    list.adminMeta.readViews(list.fields.map(({ views }) => views.Field));
+
     return (
       <Drawer
         closeOnBlanketClick
@@ -83,22 +91,45 @@ class CreateItemModal extends Component {
           </Fragment>
         }
       >
-        <Body>
+        <div
+          css={{
+            marginBottom: gridSize,
+            marginTop: gridSize,
+          }}
+        >
           <AutocompleteCaptor />
-          {list.fields.map(field => {
-            const { Field } = FieldTypes[list.key][field.path];
+          {list.fields.map((field, i) => {
             return (
-              <Field
-                item={item}
-                field={field}
-                key={field.path}
-                itemErrors={[] /* TODO: Permission query results */}
-                onChange={this.onChange}
-                renderContext="dialog"
-              />
+              <Render key={field.path}>
+                {() => {
+                  let [Field] = field.adminMeta.readViews([field.views.Field]);
+                  let onChange = useCallback(value => {
+                    this.setState(({ item }) => ({
+                      item: {
+                        ...item,
+                        [field.path]: value,
+                      },
+                    }));
+                  }, []);
+                  return useMemo(
+                    () => (
+                      <Field
+                        autoFocus={!i}
+                        value={item[field.path]}
+                        field={field}
+                        /* TODO: Permission query results */
+                        // error={}
+                        onChange={onChange}
+                        renderContext="dialog"
+                      />
+                    ),
+                    [i, item[field.path], field, onChange]
+                  );
+                }}
+              </Render>
             );
           })}
-        </Body>
+        </div>
       </Drawer>
     );
   }
@@ -108,11 +139,13 @@ export default class CreateItemModalWithMutation extends Component {
   render() {
     const { list } = this.props;
     return (
-      <Mutation mutation={list.createMutation}>
-        {(createItem, { loading }) => (
-          <CreateItemModal createItem={createItem} isLoading={loading} {...this.props} />
-        )}
-      </Mutation>
+      <Suspense fallback={null}>
+        <Mutation mutation={list.createMutation}>
+          {(createItem, { loading }) => (
+            <CreateItemModal createItem={createItem} isLoading={loading} {...this.props} />
+          )}
+        </Mutation>
+      </Suspense>
     );
   }
 }
