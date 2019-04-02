@@ -51,6 +51,7 @@ const updater = (keystoneSchemaInfo, types) => {
   const paths = flatten(
     (Array.isArray(types) ? types : [types]).map(type => cacheInvalidationFieldPaths[type])
   );
+  console.log(paths);
   return invalidateFields(() => paths);
 };
 
@@ -79,6 +80,7 @@ class KeystoneApolloQueryCacheBuster extends React.Component {
   // refetched as expected.
   // The downside is there are a couple of extra re-renders triggered.
   static getDerivedStateFromProps(props, state) {
+    console.log('query derive', props);
     const newState = {};
 
     // These variables are derived from the props

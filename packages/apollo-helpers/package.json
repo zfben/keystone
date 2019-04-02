@@ -24,7 +24,16 @@
     "react": "^16.8.4"
   },
   "devDependencies": {
-    "react": "^16.8.4"
+    "@keystone-alpha/fields": "^3.0.2",
+    "@keystone-alpha/test-utils": "^1.1.3",
+    "apollo-cache-inmemory": "^1.5.1",
+    "apollo-client": "^2.5.1",
+    "apollo-link-http": "^1.5.14",
+    "react": "^16.8.4",
+    "react-test-renderer": "^16.8.6",
+    "supertest-fetch": "^1.2.4",
+    "testcheck": "^1.0.0-rc.2",
+    "wait-for-expect": "^1.1.1"
   },
   "main": "dist/apollo-helpers.cjs.js",
   "module": "dist/apollo-helpers.esm.js"

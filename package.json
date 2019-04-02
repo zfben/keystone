@@ -244,6 +244,7 @@
   "devDependencies": {
     "@atlaskit/build-releases": "^3.0.3",
     "all-contributors-cli": "^6.1.2",
+    "apollo-link-http": "^1.5.14",
     "babel-eslint": "^10.0.1",
     "bolt": "^0.22.6",
     "chalk": "^2.4.2",
@@ -276,11 +277,14 @@
     "p-is-promise": "^2.0.0",
     "pino-colada": "^1.4.4",
     "prettier": "^1.16.4",
+    "react-test-renderer": "^16.8.6",
     "start-server-and-test": "^1.7.11",
+    "supertest-fetch": "^1.2.4",
     "supertest-light": "^1.0.2",
     "terminal-link": "^1.2.0",
     "terminal-link-cli": "^2.0.0",
     "testcheck": "^1.0.0-rc.2",
-    "tmp": "^0.0.33"
+    "tmp": "^0.0.33",
+    "wait-for-expect": "^1.1.1"
   }
 }
