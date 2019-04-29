@@ -1,7 +1,9 @@
 import { Global } from '@emotion/core';
+import Header from '../components/Header';
 
 export default ({ children }) => (
   <div>
+    <Header />
     <Global
       styles={{
         body: {

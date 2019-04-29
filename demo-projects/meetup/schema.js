@@ -24,7 +24,7 @@ exports.Meetup = {
     status: { type: Select, options: 'draft, active' },
     day: { type: CalendarDay },
     description: { type: Wysiwyg },
-    talks: { type: Relationship, ref: 'Talk' },
+    talks: { type: Relationship, ref: 'Talk', many: true },
   },
 };
 
