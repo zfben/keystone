@@ -14,7 +14,7 @@ import Dropdown from '@arch-ui/dropdown';
 import { A11yText } from '@arch-ui/typography';
 import { Card } from '@arch-ui/card';
 import DeleteItemModal from './DeleteItemModal';
-import { copyToClipboard } from '../util';
+import { copyToClipboard, deconstructErrorsToDataShape  } from '../util';
 import { useListSort } from '../pages/List/dataHooks';
 import PageLoading from './PageLoading';
 import { NoResults } from './NoResults';
@@ -304,7 +304,7 @@ export default function ListTable(props) {
     fields,
     isFullWidth,
     items,
-    itemsErrors = [],
+    queryErrors = [],
     list,
     onChange,
     onSelectChange,
@@ -420,7 +420,7 @@ export default function ListTable(props) {
 
               return (
                 <TableContents>
-                  {items.map((item, itemIndex) => (
+                  {items.map(item => list.deserializeItemData(item)).map((item, itemIndex) => (
                     <ListRow
                       fields={fields}
                       isSelected={selectedItems.includes(item.id)}
