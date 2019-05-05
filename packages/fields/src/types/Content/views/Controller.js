@@ -74,7 +74,6 @@ export default class ContentController extends TextController {
       return this.getBlocks();
     } catch (loadingPromiseOrError) {
       if (isPromise(loadingPromiseOrError)) {
-        debugger;
         // `.getBlocks()` thinks it's in React Suspense mode, which we can't
         // handle here, so we throw a new error.
         throw new Error(
@@ -119,8 +118,15 @@ export default class ContentController extends TextController {
 
     const blocks = this.getBlocksSync();
 
+    // TODO: Make the .document a JSON type in GraphQL so we dont have to parse
+    // it
+    const parsedData = {
+      ...data[path],
+      document: JSON.parse(data[path].document)
+    }
+
     return deserialiseToSlateValue(
-      data[path],
+      parsedData,
       omitBy(blocks, type => !blocks[type].deserialize)
     );
   };
