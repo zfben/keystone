@@ -235,6 +235,18 @@ module.exports = class Keystone {
       graphql(schema, query, null, context, variables);
   }
 
+  executeQuery({ query, variables, schemaName }) {
+    return this._graphQLQuery[schemaName](
+      query,
+      {
+        schemaName,
+        getListAccessControlForUser: () => true,
+        getFieldAccessControlForUser: () => true,
+      },
+      variables
+    );
+  }
+
   getAdminSchema() {
     const typeDefs = this.getTypeDefs();
     if (debugGraphQLSchemas()) {
