@@ -68,7 +68,7 @@ keystone
               list.createManyMutationName
             }(data: $items) { id } }`,
             schemaName: 'admin',
-            variables: { items },
+            variables: { items: items.map(d => ({ data: d })) },
           });
         })
       );
@@ -86,7 +86,7 @@ keystone
               list.createManyMutationName
             }(data: $items) { id } }`,
             schemaName: 'admin',
-            variables: { items },
+            variables: { items: items.map(d => ({ data: d })) },
           });
         })
       );
