@@ -2,6 +2,7 @@ import App, { Container } from 'next/app';
 import fetch from 'isomorphic-unfetch';
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
+import { ApolloProvider as ApolloHookProvider } from 'react-apollo-hooks';
 
 import withApollo from '../lib/withApollo';
 import { AuthProvider } from '../lib/authetication';
@@ -30,7 +31,9 @@ class MyApp extends App {
       <Container>
         <AuthProvider intitialUserValue={user}>
           <ApolloProvider client={apolloClient}>
-            <Component {...pageProps} />
+            <ApolloHookProvider client={apolloClient}>
+              <Component {...pageProps} />
+            </ApolloHookProvider>
           </ApolloProvider>
         </AuthProvider>
       </Container>

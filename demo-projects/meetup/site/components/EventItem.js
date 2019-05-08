@@ -1,6 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { Mutation, Query } from 'react-apollo';
+import { useQuery, useMutation } from 'react-apollo-hooks';
 import { useAuth } from '../lib/authetication';
 
 const ADD_RSVP = gql`
@@ -51,52 +52,43 @@ const GET_EVENT_RSVPS = gql`
   }
 `;
 
+const Rsvp = ({ id }) => {
+  const { user } = useAuth();
+  const { data, loading, error } = useQuery(GET_EVENT_RSVPS, { variables: { event: id, user: user.id }});
+  const createRsvp = useMutation(ADD_RSVP, { refetchQueries: () => [{ query: GET_EVENT_RSVPS, variables: { event: id, user: user.id }}]});
+  const updateRsvp = useMutation(UPDATE_RSVP);
+
+  if(loading) { return <p>loading...</p>; }
+  if (error) {
+    console.log(error);
+    return <p>Error!</p>;
+  }
+
+  const handleClick = (status) => {
+    if(data.allRsvps[0]) {
+      updateRsvp({ variables: { rsvp: data.allRsvps[0].id, status }});
+    } else {
+      createRsvp({ variables: { event: id, user: user.id, status }});
+    }
+  }
+   
+  return (
+      <div>
+        <h3>RSVP?</h3>
+        <a onClick={() => handleClick('yes')}>Yes </a>
+        <a onClick={() => handleClick('no')}>No</a>
+      </div>
+  );
+}
+
 const EventItem = ({ id, name, startDate, talks }) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <li>
       <h2>{name}</h2>                
       <p>{startDate}</p>
-      {isAuthenticated ?
-        <Query query={GET_EVENT_RSVPS} variables={{ event: id, user: user.id }}>
-          {({ data, loading, error }) => {
-            if (loading) return <p>loading...</p>;
-            if (error) {
-              console.log(error);
-              return <p>Error!</p>;
-            }
-
-            return (
-              <Mutation 
-                mutation={data.allRsvps[0] ? UPDATE_RSVP : ADD_RSVP}
-                refetchQueries={() => [{
-                  query: GET_EVENT_RSVPS,
-                  variables: { event: id, user: user.id }
-                }]}
-              >
-                {updateRsvp => {
-                  let variables = {
-                    rsvp: data.allRsvps[0] ? data.allRsvps[0].id : null,
-                    event: id, 
-                    user: user.id, 
-                  }
-
-                  return (
-                    <div>
-                      <h3>RSVP?</h3>
-                      <a onClick={() => updateRsvp({ variables: { ...variables, status: "yes" }})}>Yes </a>
-                      <a onClick={() => updateRsvp({ variables: { ...variables, status: "no" }})}>No</a>
-                    </div>
-                  )
-                }}
-              </Mutation>
-            )
-          }}
-        </Query>   
-      : 
-        <p>please login to RSVP</p>
-      }
+      { isAuthenticated ? <Rsvp id={id} /> : <p>please login to RSVP</p> }
       <h2>Talks</h2>
       {talks.map(talk => (
         <div key={talk.id}>
