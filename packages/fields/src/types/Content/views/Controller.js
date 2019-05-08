@@ -130,13 +130,15 @@ export default class ContentController extends TextController {
 
   getDefaultValue = () => Value.fromJSON(initialValue);
 
-  getQueryFragment = () => {
-    return `
-      ${this.path} {
-        document
-      }
-    `;
-  };
+  getQueryFragment = () => `
+    ${this.path} {
+      document
+      ${Object.values(this.config.blockOptions)
+        .map(({ defaultQuery }) => defaultQuery)
+        .filter(Boolean)
+        .join('\n')}
+    }
+  `;
 
   // NOTE: We can't use `super()` below because of some weirdness that Babel is
   // introducing (a bug perhaps?). Instead, I had to copy+pasta the base

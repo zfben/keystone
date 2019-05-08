@@ -27,6 +27,19 @@ export default {
       viewPath: importView('./views/blocks/single-image'),
       implementation: ImageBlock,
       dependencies: [image, caption],
+      defaultConfig: {
+        adminConfig: {
+          defaultQuery: `
+            cloudinaryImages {
+              id
+              image {
+                publicUrl
+              }
+              align
+            }
+          `,
+        },
+      },
     },
     // gallery: {
     //   type: 'cloudinaryGallery',
