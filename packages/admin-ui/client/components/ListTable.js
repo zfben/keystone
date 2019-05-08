@@ -14,7 +14,7 @@ import Dropdown from '@arch-ui/dropdown';
 import { A11yText } from '@arch-ui/typography';
 import { Card } from '@arch-ui/card';
 import DeleteItemModal from './DeleteItemModal';
-import { copyToClipboard, deconstructErrorsToDataShape  } from '../util';
+import { copyToClipboard, deconstructErrorsToDataShape } from '../util';
 import { useListSort } from '../pages/List/dataHooks';
 import PageLoading from './PageLoading';
 import { NoResults } from './NoResults';
@@ -420,19 +420,21 @@ export default function ListTable(props) {
 
               return (
                 <TableContents>
-                  {items.map(item => list.deserializeItemData(item)).map((item, itemIndex) => (
-                    <ListRow
-                      fields={fields}
-                      isSelected={selectedItems.includes(item.id)}
-                      item={item}
-                      itemErrors={itemsErrors[itemIndex] || {}}
-                      key={item.id}
-                      link={({ path, id }) => `${adminPath}/${path}/${id}`}
-                      list={list}
-                      onDelete={onChange}
-                      onSelectChange={onSelectChange}
-                    />
-                  ))}
+                  {items
+                    .map(item => list.deserializeItemData(item))
+                    .map((item, itemIndex) => (
+                      <ListRow
+                        fields={fields}
+                        isSelected={selectedItems.includes(item.id)}
+                        item={item}
+                        itemErrors={itemsErrors[itemIndex] || {}}
+                        key={item.id}
+                        link={({ path, id }) => `${adminPath}/${path}/${id}`}
+                        list={list}
+                        onDelete={onChange}
+                        onSelectChange={onSelectChange}
+                      />
+                    ))}
                 </TableContents>
               );
             }}

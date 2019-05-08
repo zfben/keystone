@@ -84,7 +84,7 @@ export default class ContentController extends TextController {
       // An actual error occured
       throw loadingPromiseOrError;
     }
-  }
+  };
 
   serialize = data => {
     const { path } = this;
@@ -122,13 +122,10 @@ export default class ContentController extends TextController {
     // it
     const parsedData = {
       ...data[path],
-      document: JSON.parse(data[path].document)
-    }
+      document: JSON.parse(data[path].document),
+    };
 
-    return deserialiseToSlateValue(
-      parsedData,
-      omitBy(blocks, type => !blocks[type].deserialize)
-    );
+    return deserialiseToSlateValue(parsedData, omitBy(blocks, type => !blocks[type].deserialize));
   };
 
   getDefaultValue = () => Value.fromJSON(initialValue);
@@ -153,7 +150,7 @@ export default class ContentController extends TextController {
         }
         this.adminMeta.readViews([Field]);
       },
-      () => this.getBlocks()
+      () => this.getBlocks(),
     ]);
-  }
+  };
 }

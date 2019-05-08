@@ -166,8 +166,9 @@ export function deserialiseToSlateValue({ document, ...serializations }, blocks)
         // Pick out the data set based on the block's path
         const data = serializations[block.path];
 
-        const joins = ((node.data && node.data._joinIds) || [])
-          .map(joinId => data.find(({ id }) => joinId === id));
+        const joins = ((node.data && node.data._joinIds) || []).map(joinId =>
+          data.find(({ id }) => joinId === id)
+        );
 
         // NOTE: deserialize _may_ return null. It will then fall into the
         // `defaultVisitor` handler below.
