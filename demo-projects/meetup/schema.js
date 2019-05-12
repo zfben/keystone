@@ -53,6 +53,7 @@ exports.Event = {
     name: { type: Text },
     status: { type: Select, options: 'draft, active' },
     startDate: { type: DateTime },
+    location: { type: Text },
     durationMins: { type: Integer },
     description: { type: Wysiwyg },
     talks: { type: Relationship, ref: 'Talk.event', many: true },
@@ -76,4 +77,9 @@ exports.Rsvp = {
     user: { type: Relationship, ref: 'User' },
     status: { type: Select, options: 'yes, no' },
   },
+  // hooks: {
+  //   validateInput: ({ resolvedData, existingItem, context, list }) => {
+  //     throw "test error";
+  //   }
+  // }
 };
