@@ -169,15 +169,15 @@ const Sponsors = () => {
   );
 };
 
-const Talk = ({ title, description, speakers, ...props }) => {
+const Talk = ({ name, description, speakers, ...props }) => {
   return (
     <div css={{ padding: '0 1.5rem' }} {...props}>
-      <H3 size={5}>{title}</H3>
+      <H3 size={5}>{name}</H3>
       <p dangerouslySetInnerHTML={{ __html: description }} />
       <p>
+        by{' '}
         {speakers.map(speaker => (
           <span key={speaker.id} css={{ fontWeight: 600 }}>
-            <img alt={speaker.name} src={speaker.image.publicUrl} />
             {speaker.name}
           </span>
         ))}

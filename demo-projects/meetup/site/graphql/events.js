@@ -10,6 +10,7 @@ export const EVENT_DATA = gql`
     talks {
       id
       name
+      description
       speakers {
         id
         name
