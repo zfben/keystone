@@ -1,5 +1,5 @@
 const {
-  File,
+  CloudinaryImage,
   Text,
   Relationship,
   Select,
@@ -8,21 +8,27 @@ const {
   CalendarDay,
   DateTime,
 } = require('@keystone-alpha/fields');
-const { Wysiwyg } = require('@keystone-alpha/fields-wysiwyg-tinymce');
-const { LocalFileAdapter } = require('@keystone-alpha/file-adapters');
+//const { Wysiwyg } = require('@keystone-alpha/fields-wysiwyg-tinymce');
+const { CloudinaryAdapter } = require('@keystone-alpha/file-adapters');
 const getYear = require('date-fns/get_year');
 
 const { staticRoute, staticPath, distDir } = require('./config');
 const dev = process.env.NODE_ENV !== 'production';
 
-const fileAdapter = new LocalFileAdapter({
-  directory: `${dev ? '' : `${distDir}/`}${staticPath}/uploads`,
-  route: `${staticRoute}/uploads`,
+const cloudinary = {
+  cloudName: process.env.CLOUDINARY_CLOUDNAME,
+  apiKey: process.env.CLOUDINARY_API_KEY,
+  apiSecret: process.env.CLOUDINARY_API_SECRET,
+};
+
+const fileAdapter = new CloudinaryAdapter({
+  ...cloudinary,
+  folder: 'post-images',
 });
 
-const avatarFileAdapter = new LocalFileAdapter({
-  directory: `${staticPath}/avatars`,
-  route: `${staticRoute}/avatars`,
+const avatarFileAdapter = new CloudinaryAdapter({
+  ...cloudinary,
+  folder: 'avatars',
 });
 
 exports.User = {
@@ -37,7 +43,7 @@ exports.User = {
     },
     password: { type: Password },
     isAdmin: { type: Checkbox },
-    avatar: { type: File, adapter: avatarFileAdapter },
+    avatar: { type: CloudinaryImage, adapter: avatarFileAdapter },
   },
   labelResolver: item => `${item.name} <${item.email}>`,
 };
@@ -59,9 +65,9 @@ exports.Post = {
       defaultValue: 'draft',
       options: [{ label: 'Draft', value: 'draft' }, { label: 'Published', value: 'published' }],
     },
-    body: { type: Wysiwyg },
+    body: { type: Text },
     posted: { type: DateTime, format: 'DD/MM/YYYY' },
-    image: { type: File, adapter: fileAdapter },
+    image: { type: CloudinaryImage, adapter: fileAdapter },
   },
   adminConfig: {
     defaultPageSize: 20,

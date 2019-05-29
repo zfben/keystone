@@ -22,6 +22,11 @@ module.exports = {
     const entryFile = await getEntryFileFullPath(args, { exeName, _cwd });
     spinner.succeed(`Validated project entry file ./${path.relative(_cwd, entryFile)}`);
     spinner.start(' ');
-    return executeDefaultServer(args, entryFile, undefined, spinner);
+    await executeDefaultServer(args, entryFile, undefined, spinner);
+    // Return a never-ending promise to keep the server alive
+    return new Promise(resolve => {
+      process.on('SIGINT', resolve);
+      process.on('SIGTERM', resolve);
+    });
   },
 };

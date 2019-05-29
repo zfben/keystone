@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "name": "keystone-blog-demo",
+  "builds": [
+    { "src": "app/package.json", "use": "@now/next" },
+    {
+      "src": "serverless.js",
+      "use": "@now/node",
+      "config": { "maxLambdaSize": "50mb", "includeFiles": "dist/**/*.*" }
+    }
+  ],
+  "routes": [
+    { "src": "^/admin(/?$|/(.*))", "dest": "serverless.js" },
+    { "src": "^/(.*)", "dest": "/app/$1" }
+  ],
+  "env": {
+    "CONNECT_TO": "@demo-blog_connect-to",
+    "CLOUDINARY_CLOUDNAME": "@demo-blog_cloudinary-cloudname",
+    "CLOUDINARY_API_KEY": "@demo-blog_cloudinary-api-key",
+    "CLOUDINARY_API_SECRET": "@demo-blog_cloudinary-api-secret"
+  },
+  "build": {
+    "env": {
+      "CONNECT_TO": "@demo-blog_connect-to",
+      "CLOUDINARY_CLOUDNAME": "@demo-blog_cloudinary-cloudname",
+      "CLOUDINARY_API_KEY": "@demo-blog_cloudinary-api-key",
+      "CLOUDINARY_API_SECRET": "@demo-blog_cloudinary-api-secret"
+    }
+  }
+}

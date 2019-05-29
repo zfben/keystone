@@ -1,5 +1,3 @@
-const { distDir } = require('../config');
-
 module.exports = {
-  distDir: `../${distDir}/www`,
+  target: 'serverless',
 };
