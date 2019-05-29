@@ -5,4 +5,5 @@ module.exports = {
   DEFAULT_SERVER: 'server.js',
   DEFAULT_DIST_DIR: 'dist',
   DEFAULT_COMMAND: 'dev',
+  DEFAULT_TARGET: 'server',
 };

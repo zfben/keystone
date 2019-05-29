@@ -24,7 +24,7 @@ const {
   mergeRelationships,
 } = require('./relationship-utils');
 const List = require('../List');
-const { DEFAULT_PORT, DEFAULT_DIST_DIR } = require('../../constants');
+const { DEFAULT_DIST_DIR, DEFAULT_TARGET } = require('../../constants');
 
 const debugGraphQLSchemas = () => !!process.env.DEBUG_GRAPHQL_SCHEMAS;
 
@@ -419,7 +419,7 @@ module.exports = class Keystone {
     return mergeRelationships(createdItems, createdRelationships);
   }
 
-  async prepare({ port = DEFAULT_PORT, dev = false, apps = [], distDir } = {}) {
+  async prepare({ dev = false, apps = [], target = DEFAULT_TARGET, distDir } = {}) {
     const middlewares = flattenDeep(
       await Promise.all(
         [
@@ -429,12 +429,11 @@ module.exports = class Keystone {
           ...this.registeredTypes,
           ...apps,
         ]
-          .filter(({ prepareMiddleware } = {}) => !!prepareMiddleware)
+          .filter(({ targets } = {}) => targets && targets[target] && targets[target].prepare && targets[target].prepare[dev ? 'development' : 'production'])
           .map(app =>
-            app.prepareMiddleware({
+            require(app.targets[target].prepare[dev ? 'development' : 'production'])({
               keystone: this,
-              port,
-              dev,
+              app,
               distDir: distDir || DEFAULT_DIST_DIR,
             })
           )

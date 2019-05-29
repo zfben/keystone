@@ -137,7 +137,10 @@ const dev = process.env.NODE_ENV !== 'production';
 const preparations = [
   new GraphQLApp(),
   new AdminUIApp()
-].map(app => app.prepareMiddleware({ keystone, dev }));
+].map(app => {
+  const action = process.env.NODE_ENV !== 'production' ? 'prepareDevMiddleware' : 'prepareProdMiddleware';
+  return require(app.actions[action])({ keystone, app })
+});
 
 Promise.all(preparations)
   .then(middlewares => {

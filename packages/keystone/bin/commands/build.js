@@ -2,25 +2,34 @@ const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs-extra');
 const { getEntryFileFullPath } = require('../utils');
-const { DEFAULT_ENTRY, DEFAULT_DIST_DIR } = require('../../constants');
+const { DEFAULT_ENTRY, DEFAULT_DIST_DIR, DEFAULT_TARGET } = require('../../constants');
 
 module.exports = {
   // prettier-ignore
   spec: {
-    '--out':   String,
-    '-o':      '--out',
-    '--entry': String,
+    '--out':    String,
+    '-o':       '--out',
+    '--target': String,
+    '-t':       '--target',
+    '--entry':  String,
+    '-e':       '--entry',
   },
   help: ({ exeName }) => `
     Usage
       $ ${exeName} build --out=dist
 
     Options
-      --out, -o   Directory to save build [dist]
-      --entry     Entry file exporting keystone instance [${DEFAULT_ENTRY}]
+      --out,    -o  Directory to save build [${DEFAULT_DIST_DIR}]
+      --entry,  -e  Entry file exporting keystone instance [${DEFAULT_ENTRY}]
+      --target, -t  Target either 'server' or 'serverless' builds [${DEFAULT_TARGET}]
   `,
   exec: async (args, { exeName, _cwd = process.cwd() } = {}, spinner) => {
     process.env.NODE_ENV = 'production';
+
+    const target = args['--target'] || DEFAULT_TARGET;
+    if (target !== 'server' && target !== 'serverless') {
+      return Promise.reject(new Error("target must be one of 'server' or 'serverless'"));
+    }
 
     spinner.text = 'Validating project entry file';
     let entryFile = await getEntryFileFullPath(args, { exeName, _cwd });
@@ -40,14 +49,15 @@ module.exports = {
 
     if (apps) {
       await Promise.all(
-        apps.map(app => {
-          return app.build({
-            apiPath: '/admin/api',
-            distDir: resolvedDistDir,
-            graphiqlPath: '/admin/graphiql',
-            keystone,
-          });
-        })
+        apps
+          .filter(({ targets } = {}) => targets && targets[target] && targets[target].build)
+          .map(app =>
+            require(app.targets[target].build)({
+              distDir: resolvedDistDir,
+              keystone,
+              app,
+            })
+          )
       );
 
       spinner.succeed(
