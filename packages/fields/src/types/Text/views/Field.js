@@ -1,9 +1,10 @@
 /** @jsx jsx */
 
 import { jsx } from '@emotion/core';
-import { Component } from 'react';
+import { Fragment, Component } from 'react';
 
 import { FieldContainer, FieldLabel, FieldInput } from '@arch-ui/fields';
+import { Alert } from '@arch-ui/alert';
 import { Input } from '@arch-ui/input';
 import { ShieldIcon } from '@arch-ui/icons';
 import { colors } from '@arch-ui/theme';
@@ -13,7 +14,7 @@ export default class TextField extends Component {
     this.props.onChange(event.target.value);
   };
   render() {
-    const { autoFocus, field, error, value: serverValue } = this.props;
+    const { autoFocus, field, error, value: serverValue, errors, warnings } = this.props;
     const { isMultiline } = field.config;
     const value = serverValue || '';
     const htmlID = `ks-input-${field.path}`;
@@ -46,6 +47,28 @@ export default class TextField extends Component {
             isMultiline={isMultiline}
           />
         </FieldInput>
+
+        {errors.length ? (
+          <Fragment>
+            {errors.map(({ message, data }) => (
+              <Alert appearance="danger" key={message}>
+                {message}
+                {data ? ` - ${JSON.stringify(data)}` : null}
+              </Alert>
+            ))}
+          </Fragment>
+        ) : null}
+
+        {warnings.length ? (
+          <Fragment>
+            {warnings.map(({ message, data }) => (
+              <Alert appearance="warning" key={message}>
+                {message}
+                {data ? ` - ${JSON.stringify(data)}` : null}
+              </Alert>
+            ))}
+          </Fragment>
+        ) : null}
       </FieldContainer>
     );
   }

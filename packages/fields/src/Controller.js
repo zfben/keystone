@@ -54,7 +54,11 @@ export default class FieldController {
    * @param {addFieldWarningOrError} options.addFieldValidationWarning
    * @return undefined
    */
-  validateInput = () => {};
+  validateInput = ({ resolvedData, addFieldValidationError }) => {
+    if (!resolvedData[this.path] && this.config.isRequired) {
+      addFieldValidationError(`${this.label} is required`);
+    }
+  };
 
   // When receiving data from the server, it needs to be processed into a
   // format ready for display. The format received will be the same as specified
