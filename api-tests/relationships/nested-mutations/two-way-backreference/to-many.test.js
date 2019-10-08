@@ -224,7 +224,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
           })
         );
 
-        test(
+        test.only(
           'during update mutation',
           runner(setupKeystone, async ({ keystone, create }) => {
             let student = await create('Student', {});
@@ -235,34 +235,46 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
             const { data, errors } = await graphqlRequest({
               keystone,
               query: `
-          mutation {
-            updateStudent(
-              id: "${student.id}"
-              data: {
-                teachers: { create: [{ name: "${teacherName1}" }, { name: "${teacherName2}" }] }
-              }
-            ) {
-              id
-              teachers {
-                id
-              }
-            }
-          }
-      `,
+                mutation {
+                  updateStudent(
+                    id: "${student.id}"
+                    data: {
+                      teachers: { create: [{ name: "${teacherName1}" }, { name: "${teacherName2}" }] }
+                    }
+                  ) {
+                    id
+                    teachers {
+                      id
+                    }
+                  }
+                }
+            `,
             });
 
             expect(errors).toBe(undefined);
-
+            console.log('A');
+            console.log(data);
             let newTeachers = data.updateStudent.teachers;
 
             // Check the link has been broken
             const teacher1 = await getTeacher(keystone, newTeachers[0].id);
+<<<<<<< HEAD
             const teacher2 = await getTeacher(keystone, newTeachers[1].id);
             student = await getStudent(keystone, student.id);
+=======
+            console.log('A1');
+            const teacher2 = await getTeacher(keystone, newTeachers[1].id);
+            student = await getStudent(keystone, student.id);
+            console.log('B');
+>>>>>>> KnexListAdapter.findById will no longer populate many relationship fields
 
             compareIds(student.teachers, [teacher1, teacher2]);
             compareIds(teacher1.students, [student]);
             compareIds(teacher2.students, [student]);
+<<<<<<< HEAD
+=======
+            console.log('C');
+>>>>>>> KnexListAdapter.findById will no longer populate many relationship fields
           })
         );
       });

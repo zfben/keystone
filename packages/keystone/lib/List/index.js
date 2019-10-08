@@ -1556,7 +1556,7 @@ module.exports = class List {
       await this._beforeChange(resolvedData, existingItem, context, operation, data);
 
       const newItem = await this.adapter.update(id, resolvedData);
-
+      console.log({ newItem });
       return {
         result: newItem,
         afterHook: () => this._afterChange(newItem, existingItem, context, operation, data),

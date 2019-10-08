@@ -117,7 +117,7 @@ const relateToOneItem = async ({ relatedTo, relatedFrom }) => {
   const updateResult = await relatedFrom.list.adapter.update(relatedFrom.item.id, {
     [relatedFrom.field]: relatedToItems[0].id,
   });
-
+  console.log({ updateResult });
   return updateResult[relatedFrom.field];
 };
 
@@ -150,7 +150,7 @@ const relateToManyItems = async ({ relatedTo, relatedFrom }) => {
   const updateResult = await relatedFrom.list.adapter.update(relatedFrom.item.id, {
     [relatedFrom.field]: relatedToItems.map(({ id }) => id),
   });
-
+  console.log({ updateResult });
   return updateResult[relatedFrom.field];
 };
 
