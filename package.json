@@ -8,8 +8,9 @@
   "repository": "https://github.com/keystonejs/keystone",
   "homepage": "https://github.com/keystonejs/keystone",
   "scripts": {
-    "dev": "yarn demo todo dev",
-    "demo": "manypkg run demo-projects",
+    "dev": "yarn demo dev",
+    "rels": "yarn demo rels",
+    "demo": "manypkg run demo-projects/todo",
     "website": "manypkg run website",
     "arch-docs": "manypkg run arch/docs",
     "coverage": "cross-env DISABLE_LOGGING=true NODE_ENV=test jest --maxWorkers=1 --coverage",

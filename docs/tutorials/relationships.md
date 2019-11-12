@@ -14,8 +14,8 @@ previous tutorials:
 
 ## To-single relationship
 
-Let's link the Todo list and the User list together by setting up
-a `relationship`. Tweak the `assignee` field in `Todo.js` to match the following code:
+Let's link the `Todo` list and the `User` list together by setting up
+a `relationship`. Tweak the `assignee` field in `Todos.js` to match the following code:
 
 Import the `Relationship` field:
 
@@ -52,16 +52,12 @@ task: {
 }
 ```
 
-Now we can set a task for the User from the admin panel. But something is wrong!
-When we pick a task for the user and then check this task, the assignee is
-incorrect. This can be solved by using a `Back Reference`.
+Now we can set a task for the User from the admin panel. But something is wrong! When we pick a task for the user and then check this task, the `assignee` is incorrect. This is because we have create two separate one-sided relationships. What we want is a single two-sided relationship.
 
-## Back references
+## Setting up a two-sided relationship between Users and Todos
 
-`Back references` are Keystone's mechanism that can overwrite fields of the
-referenced entity. It is better seen in action, so let's write some code first.
-
-In `User.js` adjust the `task` field to the following:
+In order to indicate that `task` and `assignee` are just two different sides of a single relationship, we need to update our configurations
+In `Users.js` adjust the `task` field to the following:
 
 ```diff title=/lists/User.js allowCopy=false showLanguage=false
 task: {
@@ -109,5 +105,6 @@ UI you can pick multiple tasks for a user.
 
 See also:
 
+- [Relationships](/docs/discussions/relationships.md)
 - [Schema - Lists & Fields](/docs/guides/schema.md)
 - [Field Types - Relationship](/packages/fields/src/types/Relationship/README.md)
