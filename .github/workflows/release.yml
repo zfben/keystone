@@ -15,10 +15,10 @@ jobs:
         uses: actions/checkout@master
 
       - name: Test thing
-        run: git log --diff-filter=A --max-count=1 --pretty=format:%h ./.changeset/chilly-berries-yell.md
+        run: git log ./.changeset/chilly-berries-yell.md
       - name: Test thing
-        run: git log --diff-filter=A --max-count=1 --pretty=format:%h ./.changeset/fuzzy-tables-matter.md
+        run: git log ./.changeset/fuzzy-tables-matter.md
       - name: Test thing
-        run: git log --diff-filter=A --max-count=1 --pretty=format:%h ./.changeset/old-geese-vanish.md
+        run: git log ./.changeset/old-geese-vanish.md
       - name: Test thing
-        run: git log --diff-filter=A --max-count=1 --pretty=format:%h ./.changeset/tasty-carrots-whisper.md
+        run: git log ./.changeset/tasty-carrots-whisper.md
