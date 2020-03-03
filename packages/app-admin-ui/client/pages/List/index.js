@@ -1,8 +1,9 @@
 /** @jsx jsx */
 
 import { jsx } from '@emotion/core';
-import { Fragment, useEffect, useRef, useState, Suspense } from 'react';
-import { Query } from 'react-apollo';
+import { Fragment, useEffect, useRef, Suspense } from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import { useList } from '../../providers/List';
 
 import { IconButton } from '@arch-ui/button';
 import { PlusIcon } from '@arch-ui/icons';
@@ -30,40 +31,23 @@ import Management, { ManageToolbar } from './Management';
 import { useListFilter, useListSelect, useListSort, useListUrlState } from './dataHooks';
 import { captureSuspensePromises } from '@keystonejs/utils';
 
+import { useAdminMeta } from '../../providers/AdminMeta';
+
 const HeaderInset = props => (
   <div css={{ paddingLeft: gridSize * 2, paddingRight: gridSize * 2 }} {...props} />
 );
 
-type Props = {
-  adminMeta: Object,
-  list: Object,
-  routeProps: Object,
-};
-type LayoutProps = Props & {
-  items: Array<Object>,
-  itemCount: number,
-  queryErrors: Array<Object>,
-};
-
-export function ListLayout(props: LayoutProps) {
-  const { adminMeta, items, itemCount, queryErrors, list, routeProps, query } = props;
-  const [showCreateModal, toggleCreateModal] = useState(false);
+export function ListLayout(props) {
+  const { items, itemCount, queryErrors, routeProps, query } = props;
   const measureElementRef = useRef();
-
+  const { list, openCreateItemModal } = useList();
   const { urlState } = useListUrlState(list.key);
   const { filters } = useListFilter(list.key);
   const [sortBy, handleSortChange] = useListSort(list.key);
 
-  const { adminPath } = adminMeta;
+  const { adminPath } = useAdminMeta();
   const { history, location } = routeProps;
   const { currentPage, fields, pageSize, search } = urlState;
-
-  const closeCreateModal = () => {
-    toggleCreateModal(false);
-  };
-  const openCreateModal = () => {
-    toggleCreateModal(true);
-  };
 
   const [selectedItems, onSelectChange] = useListSelect(items);
 
@@ -98,9 +82,10 @@ export function ListLayout(props: LayoutProps) {
     query.refetch();
   };
   const onCreate = ({ data }) => {
-    let id = data[list.gqlNames.createMutationName].id;
-    history.push(`${adminPath}/${list.path}/${id}`);
-    query.refetch();
+    const id = data[list.gqlNames.createMutationName].id;
+    query.refetch().then(() => {
+      history.push(`${adminPath}/${list.path}/${id}`);
+    });
   };
 
   // Success
@@ -110,7 +95,6 @@ export function ListLayout(props: LayoutProps) {
   const cypressFiltersId = 'ks-list-active-filters';
 
   const Render = ({ children }) => children();
-
   return (
     <main>
       <div ref={measureElementRef} />
@@ -123,7 +107,7 @@ export function ListLayout(props: LayoutProps) {
               <IconButton
                 appearance="primary"
                 icon={PlusIcon}
-                onClick={openCreateModal}
+                onClick={openCreateItemModal}
                 id={cypressCreateId}
               >
                 Create
@@ -225,12 +209,7 @@ export function ListLayout(props: LayoutProps) {
         </HeaderInset>
       </Container>
 
-      <CreateItemModal
-        isOpen={showCreateModal}
-        list={list}
-        onClose={closeCreateModal}
-        onCreate={onCreate}
-      />
+      <CreateItemModal onCreate={onCreate} />
 
       <Container isFullWidth>
         <ListTable
@@ -278,7 +257,7 @@ export function ListLayout(props: LayoutProps) {
   );
 }
 
-export function List(props: Props) {
+export function List(props) {
   const { list, query, routeProps } = props;
 
   // get item data
@@ -348,7 +327,7 @@ export function List(props: Props) {
   // ------------------------------
   return (
     <Fragment>
-      <DocTitle>{list.plural}</DocTitle>
+      <DocTitle title={list.plural} />
       <ListLayout
         {...props}
         items={items}
@@ -360,7 +339,7 @@ export function List(props: Props) {
   );
 }
 
-export default function ListData(props: Props) {
+export default function ListData(props) {
   const { list } = props;
   const { urlState } = useListUrlState(list.key);
 
@@ -370,10 +349,7 @@ export default function ListData(props: Props) {
   const skip = (currentPage - 1) * pageSize;
 
   const query = list.getQuery({ fields, filters, search, orderBy, skip, first });
+  const res = useQuery(query, { fetchPolicy: 'cache-and-network', errorPolicy: 'all' });
 
-  return (
-    <Query query={query} fetchPolicy="cache-and-network" errorPolicy="all">
-      {res => <List query={res} {...props} />}
-    </Query>
-  );
+  return <List query={res} {...props} />;
 }

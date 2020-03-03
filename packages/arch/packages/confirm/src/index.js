@@ -7,7 +7,7 @@ import { jsx } from '@emotion/core';
 import styled from '@emotion/styled';
 
 import { borderRadius, shadows } from '@arch-ui/theme';
-import { FocusTrap } from 'react-focus-marshal';
+import FocusTrap from 'focus-trap-react';
 import { fade, zoomInDown, withTransitionState, Blanket } from '@arch-ui/modal-utils';
 
 const innerGutter = 15;
@@ -52,7 +52,7 @@ const Body = styled.div({
 
 class ModalConfirm extends PureComponent {
   static defaultProps = {
-    attachTo: document.body,
+    attachTo: typeof document !== 'undefined' ? document.body : null,
     component: 'div',
     width: 400,
   };

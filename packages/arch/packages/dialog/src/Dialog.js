@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { createPortal } from 'react-dom';
 import ScrollLock from 'react-scrolllock';
-import { FocusTrap } from 'react-focus-marshal';
+import FocusTrap from 'focus-trap-react';
 
 import { fade, slideUp, withTransitionState, Blanket, generateUEID } from '@arch-ui/modal-utils';
 import { A11yText } from '@arch-ui/typography';
@@ -10,7 +10,7 @@ import { Body, Dialog, Footer, Header, Positioner, Title } from './primitives';
 
 class ModalDialog extends PureComponent {
   static defaultProps = {
-    attachTo: document.body,
+    attachTo: typeof document !== 'undefined' ? document.body : null,
     closeOnBlanketClick: false,
     component: 'div',
     width: 640,
@@ -52,7 +52,7 @@ class ModalDialog extends PureComponent {
         />
         <Positioner style={slideUp(transitionState)} width={width}>
           <FocusTrap
-            options={{
+            focusTrapOptions={{
               initialFocus,
               clickOutsideDeactivates: closeOnBlanketClick,
             }}

@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import styled from '@emotion/styled';
 import ScrollLock from 'react-scrolllock';
 
-import { FocusTrap } from 'react-focus-marshal';
+import FocusTrap from 'focus-trap-react';
 import {
   Blanket,
   fade,
@@ -161,7 +161,7 @@ function ModalDialogComponent({
         stackIndex={stackIndex}
       >
         <FocusTrap
-          options={{
+          focusTrapOptions={{
             initialFocus,
             clickOutsideDeactivates: closeOnBlanketClick,
           }}
@@ -185,7 +185,7 @@ function ModalDialogComponent({
 }
 
 ModalDialogComponent.defaultProps = {
-  attachTo: document.body,
+  attachTo: typeof document !== 'undefined' ? document.body : null,
   closeOnBlanketClick: false,
   component: 'div',
   width: 640,

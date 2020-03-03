@@ -28,12 +28,6 @@ const keystone = new Keystone({
   cookieSecret,
 });
 
-// eslint-disable-next-line no-unused-vars
-const authStrategy = keystone.createAuthStrategy({
-  type: PasswordAuthStrategy,
-  list: 'User',
-});
-
 const fileAdapter = new LocalFileAdapter({
   src: LOCAL_FILE_SRC,
   path: LOCAL_FILE_ROUTE,
@@ -126,7 +120,10 @@ keystone.createList('Post', {
     status: {
       type: Select,
       defaultValue: 'draft',
-      options: [{ label: 'Draft', value: 'draft' }, { label: 'Published', value: 'published' }],
+      options: [
+        { label: 'Draft', value: 'draft' },
+        { label: 'Published', value: 'published' },
+      ],
     },
     author: {
       type: Relationship,
@@ -163,6 +160,11 @@ keystone.createList('PostCategory', {
     delete: false,
     auth: true,
   },
+});
+
+const authStrategy = keystone.createAuthStrategy({
+  type: PasswordAuthStrategy,
+  list: 'User',
 });
 
 module.exports = {

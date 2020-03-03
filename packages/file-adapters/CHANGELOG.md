@@ -1,5 +1,43 @@
 # @keystonejs/file-adapters
 
+## 5.5.0
+
+### Minor Changes
+
+- [`517b23e4`](https://github.com/keystonejs/keystone/commit/517b23e4b17414ed1807e8d7af1e67377ba3b7bf) [#2391](https://github.com/keystonejs/keystone/pull/2391) Thanks [@timleslie](https://github.com/timleslie)! - Removed support for Node 8.x, as it is [no longer in maintenance mode](https://nodejs.org/en/about/releases/).
+
+## 5.4.0
+
+### Minor Changes
+
+- [`8415f628`](https://github.com/keystonejs/keystone/commit/8415f6289933cff244a592e1379ab70dfef926fc) [#2250](https://github.com/keystonejs/keystone/pull/2250) - Added `getFilename` option to S3Adapter.
+
+## 5.3.2
+
+### Patch Changes
+
+- [`9677dc17`](https://github.com/keystonejs/keystone/commit/9677dc177b7b747397732700cab42d98e89f03f5) [#2249](https://github.com/keystonejs/keystone/pull/2249) - Replaced s3.putObject with s3.upload
+
+  Resolves https://github.com/keystonejs/keystone/issues/2165
+
+## 5.3.1
+
+### Patch Changes
+
+- [`f3ea15f8`](https://github.com/keystonejs/keystone/commit/f3ea15f86f7bbd08abddcf3a63c5c66e86693d29) [#2189](https://github.com/keystonejs/keystone/pull/2189) - Upgraded prettier to 1.19.1 and formatted code accordingly.
+
+## 5.3.0
+
+### Minor Changes
+
+- [`129b0f6`](https://github.com/keystonejs/keystone/commit/129b0f61f34adb7482901d2da4ddb14ce1aedd62) [#2092](https://github.com/keystonejs/keystone/pull/2092) - Added S3 file adapter
+
+## 5.2.0
+
+### Minor Changes
+
+- [`3d2c2b2e`](https://github.com/keystonejs/keystone/commit/3d2c2b2e65943be0bd59e448d3237c3abe983b04) [#1953](https://github.com/keystonejs/keystone/pull/1953) Thanks [@Vultraz](https://github.com/Vultraz)! - Added `delete()` method to file adapters.
+
 ## 5.1.0
 
 ### Minor Changes

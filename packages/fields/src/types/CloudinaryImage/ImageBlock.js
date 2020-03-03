@@ -21,7 +21,7 @@ const RelationshipWrapper = {
 };
 
 export class ImageBlock extends Block {
-  constructor({ adapter }, { fromList, joinList, createAuxList, getListByKey, listConfig }) {
+  constructor({ adapter }, { fromList, joinList, createAuxList, getListByKey }) {
     super(...arguments);
 
     this.joinList = joinList;
@@ -57,16 +57,6 @@ export class ImageBlock extends Block {
               'A reference back to the Slate.js Serialised Document this image is embedded within',
           },
         },
-        access: Object.entries(listConfig.listAccess).reduce(
-          (acc, [schemaName, access]) => ({
-            ...acc,
-            [schemaName]: Object.entries(access).reduce(
-              (acc, [op, rule]) => ({ ...acc, [op]: !!rule }), // Reduce the entries to truthy values
-              {}
-            ),
-          }),
-          {}
-        ),
       });
     }
 
@@ -93,7 +83,7 @@ export class ImageBlock extends Block {
     return {
       [this.path]: {
         type: RelationshipWrapper,
-        ref: this.auxList.key,
+        ref: `${this.auxList.key}.from`,
         many: true,
         schemaDoc: 'Images which have been added to the Content field',
       },
