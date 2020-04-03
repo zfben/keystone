@@ -330,7 +330,7 @@ export class MongoRelationshipInterface extends MongooseFieldAdapter {
         refListKey: ref,
         config: { many },
       } = this;
-      const type = many ? [ObjectId] : ObjectId;
+      const type = many ? [ObjectId] : ObjectId; // FIXME: redundant?
       const schemaOptions = { type, ref };
       schema.add({ [this.path]: this.mergeSchemaOptions(schemaOptions, this.config) });
     }
