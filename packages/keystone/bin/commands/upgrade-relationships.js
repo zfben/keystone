@@ -30,7 +30,7 @@ const strategySummary = (
     console.log('    * No action required');
   });
 
-  console.log(chalk.bold('One-sided: mamny to many'));
+  console.log(chalk.bold('One-sided: many to many'));
   one_many_to_many.forEach(({ left, columnNames, tableName }) => {
     const { near, far } = columnNames[`${left.listKey}.${left.path}`];
     printArrow({ left });
@@ -112,7 +112,7 @@ const simpleSummary = ({
     printArrow({ left });
   });
 
-  console.log(chalk.bold('One-sided: mamny to many'));
+  console.log(chalk.bold('One-sided: many to many'));
   one_many_to_many.forEach(({ left }) => {
     printArrow({ left });
   });

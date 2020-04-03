@@ -55,7 +55,7 @@ keystone upgrade-relationships
 ⠙  One-sided: one to many
   Todo.author -> User
     * No action required
-One-sided: mamny to many
+One-sided: many to many
   Todo.reviewers -> User
     * Create a collection todo_reviewers_manies with fields Todo_left_id and User_right_id
     * Move the data from todos.reviewers into todo_reviewers_manies
@@ -81,7 +81,7 @@ Two-sided: many to many
 ⠙  One-sided: one to many
   Todo.author -> User
     * No action required
-One-sided: mamny to many
+One-sided: many to many
   Todo.reviewers -> User
     * Rename table Todo_reviewers to Todo_reviewers_many
     * Rename column Todo_id to Todo_left_id
